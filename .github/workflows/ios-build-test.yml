@@ -101,20 +101,47 @@ jobs:
     - name: Run Unit Tests
       run: |
         cd iOS
-        # Check if scheme has test targets configured
+        # Check if scheme has test targets configured by trying to list test destinations
         echo "Checking if test action is configured for scheme..."
-        SCHEME_INFO=$(xcodebuild -project CentralMosqueRochdale.xcodeproj -scheme CentralMosqueRochdale -showBuildSettings 2>/dev/null | grep -i test || true)
         
-        if [ -z "$SCHEME_INFO" ]; then
+        # Try to get test destinations - this will fail if no test targets are configured
+        TEST_CHECK=$(xcodebuild -project CentralMosqueRochdale.xcodeproj -scheme CentralMosqueRochdale -showdestinations 2>&1 | grep -i "test" || true)
+        
+        # More reliable check: try to run xcodebuild test with dry-run equivalent
+        TEST_ACTION_CHECK=$(xcodebuild -project CentralMosqueRochdale.xcodeproj -scheme CentralMosqueRochdale -destination 'generic/platform=iOS Simulator' -showBuildSettings 2>&1 | grep -i "test.*action" || true)
+        
+        # Check if the scheme file has test action configured
+        SCHEME_FILE="CentralMosqueRochdale.xcodeproj/xcshareddata/xcschemes/CentralMosqueRochdale.xcscheme"
+        if [ ! -f "$SCHEME_FILE" ]; then
+          SCHEME_FILE="CentralMosqueRochdale.xcodeproj/xcuserdata/*/xcschemes/CentralMosqueRochdale.xcscheme"
+        fi
+        
+        HAS_TEST_ACTION=false
+        if ls $SCHEME_FILE 2>/dev/null; then
+          if grep -q "TestAction" $SCHEME_FILE 2>/dev/null && grep -q "buildForTesting.*YES" $SCHEME_FILE 2>/dev/null; then
+            HAS_TEST_ACTION=true
+          fi
+        fi
+        
+        # Final check: try a dry run of the test command
+        DIRECT_TEST_CHECK=$(xcodebuild -project CentralMosqueRochdale.xcodeproj -scheme CentralMosqueRochdale -destination 'generic/platform=iOS Simulator' test -dry-run 2>&1 || true)
+        
+        if echo "$DIRECT_TEST_CHECK" | grep -q "is not currently configured for the test action"; then
           echo "⚠️  Scheme 'CentralMosqueRochdale' is not configured for testing"
-          echo "To enable testing, please:"
-          echo "1. Open CentralMosqueRochdale.xcodeproj in Xcode"
-          echo "2. Go to Product > Scheme > Edit Scheme"
-          echo "3. Select 'Test' on the left sidebar"
-          echo "4. Add test targets or create unit tests"
           echo ""
-          echo "Skipping test execution for now..."
+          echo "📋 To enable testing, please:"
+          echo "1. Open CentralMosqueRochdale.xcodeproj in Xcode"
+          echo "2. Go to Product → Scheme → Edit Scheme"
+          echo "3. Select 'Test' on the left sidebar"
+          echo "4. Click '+' to add test targets"
+          echo "5. Create a new test target: File → New → Target → Unit Testing Bundle"
+          echo ""
+          echo "🔗 More info: https://developer.apple.com/documentation/xctest"
+          echo ""
+          echo "✅ Skipping test execution - build was successful!"
         else
+          echo "✅ Test action is configured, attempting to run tests..."
+          
           # Find an available simulator for testing
           AVAILABLE_SIMULATOR=$(xcrun simctl list devices available | grep -E "iPhone.*\([A-Z0-9-]{36}\)" | head -1 | grep -o "([A-Z0-9-]\{36\})" | tr -d "()")
           
