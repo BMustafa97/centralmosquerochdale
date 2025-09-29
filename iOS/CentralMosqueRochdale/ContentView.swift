@@ -1,5 +1,34 @@
 import SwiftUI
 
+// Temporary placeholder views until we fix the imports
+struct PrayerTimesView: View {
+    var body: some View {
+        Text("Prayer Times - Coming Soon!")
+            .navigationTitle("Prayer Times")
+    }
+}
+
+struct QiblaCompassView: View {
+    var body: some View {
+        Text("Qibla Compass - Coming Soon!")
+            .navigationTitle("Qibla")
+    }
+}
+
+struct MosqueEventsView: View {
+    var body: some View {
+        Text("Mosque Events - Coming Soon!")
+            .navigationTitle("Events")
+    }
+}
+
+struct NotificationSettingsView: View {
+    var body: some View {
+        Text("Notification Settings - Coming Soon!")
+            .navigationTitle("Notifications")
+    }
+}
+
 struct ContentView: View {
     var body: some View {
         NavigationView {
@@ -18,10 +47,25 @@ struct ContentView: View {
                     .foregroundColor(.secondary)
                 
                 VStack(spacing: 20) {
-                    FeatureRow(icon: "clock", title: "Prayer Times", description: "View daily prayer schedule")
-                    FeatureRow(icon: "safari", title: "Qibla Compass", description: "Find prayer direction")
-                    FeatureRow(icon: "calendar", title: "Events", description: "Mosque events & announcements")
-                    FeatureRow(icon: "bell", title: "Notifications", description: "Prayer reminders")
+                    NavigationLink(destination: PrayerTimesView()) {
+                        FeatureRow(icon: "clock", title: "Prayer Times", description: "View daily prayer schedule")
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
+                    NavigationLink(destination: QiblaCompassView()) {
+                        FeatureRow(icon: "safari", title: "Qibla Compass", description: "Find prayer direction")
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
+                    NavigationLink(destination: MosqueEventsView()) {
+                        FeatureRow(icon: "calendar", title: "Events", description: "Mosque events & announcements")
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
+                    NavigationLink(destination: NotificationSettingsView()) {
+                        FeatureRow(icon: "bell", title: "Notifications", description: "Prayer reminders")
+                    }
+                    .buttonStyle(PlainButtonStyle())
                 }
                 .padding()
                 
@@ -48,12 +92,17 @@ struct FeatureRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.headline)
+                    .foregroundColor(.primary)
                 Text(description)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
             
             Spacer()
+            
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
         .padding()
         .background(Color.gray.opacity(0.1))
