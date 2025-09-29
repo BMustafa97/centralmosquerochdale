@@ -33,14 +33,11 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 30) {
-                Image(systemName: "house.fill")
-                    .font(.system(size: 80))
-                    .foregroundColor(.blue)
-                
-                Text("🕌 Central Mosque Rochdale")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+                Text("🕌 Central Mosque\nRochdale")
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
                     .multilineTextAlignment(.center)
+                    .lineSpacing(4)
+                    .padding(.top, 20)
                 
                 Text("Welcome to the Mosque App")
                     .font(.title2)
@@ -72,7 +69,6 @@ struct ContentView: View {
                 Spacer()
             }
             .padding()
-            .navigationTitle("Mosque App")
         }
     }
 }
