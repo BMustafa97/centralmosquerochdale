@@ -37,10 +37,11 @@ jobs:
     - name: Quick Build Check
       run: |
         cd iOS
+        # Use generic iOS Simulator destination
         xcodebuild \
           -project CentralMosqueRochdale.xcodeproj \
           -scheme CentralMosqueRochdale \
-          -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' \
+          -destination 'generic/platform=iOS Simulator' \
           -configuration Debug \
           -quiet \
           clean build \

@@ -18,7 +18,7 @@ env:
   # Environment variables
   DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
   IOS_SIMULATOR_DEVICE: iPhone 15 Pro
-  IOS_SIMULATOR_VERSION: 17.5
+  IOS_SIMULATOR_VERSION: latest
 
 jobs:
   build-and-test:
@@ -38,7 +38,13 @@ jobs:
       run: xcodebuild -version
       
     - name: Show Available Simulators
-      run: xcrun simctl list devices available
+      run: |
+        echo "Available iOS Simulators:"
+        xcrun simctl list devices available iOS
+        echo ""
+        echo "Available destinations for scheme:"
+        cd iOS
+        xcodebuild -project CentralMosqueRochdale.xcodeproj -scheme CentralMosqueRochdale -showdestinations | grep -E "(platform|name|OS)" || true
       
     - name: Cache Derived Data
       uses: actions/cache@v4
@@ -48,18 +54,32 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-derived-data-
           
-    - name: Install iOS Simulator
+    - name: Setup iOS Simulator
       run: |
-        # Install iOS 17.5 simulator if not available
-        xcrun simctl create "Test iPhone" com.apple.CoreSimulator.SimDeviceType.iPhone-15-Pro com.apple.CoreSimulator.SimRuntime.iOS-17-5 || true
+        # Get the latest available iOS simulator
+        LATEST_IOS=$(xcrun simctl list runtimes | grep iOS | tail -1 | sed 's/.*iOS \([0-9.]*\).*/\1/')
+        echo "Latest iOS runtime: $LATEST_IOS"
+        
+        # Try to find iPhone 15 Pro, fallback to iPhone 14 Pro, then any iPhone
+        DEVICE_TYPE=$(xcrun simctl list devicetypes | grep -E "iPhone (15|14|13) Pro" | head -1 | sed 's/.*(\(.*\))/\1/' || echo "com.apple.CoreSimulator.SimDeviceType.iPhone-14-Pro")
+        
+        if [ -z "$DEVICE_TYPE" ]; then
+          DEVICE_TYPE="com.apple.CoreSimulator.SimDeviceType.iPhone-14-Pro"
+        fi
+        
+        echo "Using device type: $DEVICE_TYPE"
+        
+        # Create simulator if needed
+        xcrun simctl create "GitHub Actions iPhone" "$DEVICE_TYPE" | head -1 || true
         
     - name: Build iOS App
       run: |
         cd iOS
+        # Use generic iOS Simulator destination
         xcodebuild \
           -project CentralMosqueRochdale.xcodeproj \
           -scheme CentralMosqueRochdale \
-          -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' \
+          -destination 'generic/platform=iOS Simulator' \
           -configuration Debug \
           -derivedDataPath DerivedData \
           clean build \
@@ -69,15 +89,22 @@ jobs:
     - name: Run Unit Tests
       run: |
         cd iOS
-        xcodebuild \
-          -project CentralMosqueRochdale.xcodeproj \
-          -scheme CentralMosqueRochdale \
-          -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' \
-          -configuration Debug \
-          -derivedDataPath DerivedData \
-          test \
-          CODE_SIGNING_ALLOWED=NO \
-          | xcpretty && exit ${PIPESTATUS[0]} || echo "No tests found or tests failed"
+        # Find an available simulator for testing
+        AVAILABLE_SIMULATOR=$(xcrun simctl list devices available | grep iPhone | head -1 | sed 's/.*(\([^)]*\)).*/\1/')
+        if [ -n "$AVAILABLE_SIMULATOR" ]; then
+          echo "Using simulator: $AVAILABLE_SIMULATOR"
+          xcodebuild \
+            -project CentralMosqueRochdale.xcodeproj \
+            -scheme CentralMosqueRochdale \
+            -destination "id=$AVAILABLE_SIMULATOR" \
+            -configuration Debug \
+            -derivedDataPath DerivedData \
+            test \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcpretty && exit ${PIPESTATUS[0]} || echo "No tests found or tests failed"
+        else
+          echo "No suitable simulator found for testing"
+        fi
           
     - name: Archive Build Logs
       if: failure()
@@ -146,10 +173,11 @@ jobs:
     - name: Build Release Configuration
       run: |
         cd iOS
+        # Use generic iOS Simulator destination for release build
         xcodebuild \
           -project CentralMosqueRochdale.xcodeproj \
           -scheme CentralMosqueRochdale \
-          -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' \
+          -destination 'generic/platform=iOS Simulator' \
           -configuration Release \
           -derivedDataPath DerivedData \
           clean build \
