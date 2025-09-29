@@ -41,7 +41,7 @@ jobs:
       run: xcrun simctl list devices available
       
     - name: Cache Derived Data
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/Library/Developer/Xcode/DerivedData
         key: ${{ runner.os }}-derived-data-${{ hashFiles('**/project.pbxproj') }}
@@ -81,7 +81,7 @@ jobs:
           
     - name: Archive Build Logs
       if: failure()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build-logs
         path: |
@@ -135,7 +135,7 @@ jobs:
         xcode-version: latest-stable
         
     - name: Cache Derived Data
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/Library/Developer/Xcode/DerivedData
         key: ${{ runner.os }}-derived-data-release-${{ hashFiles('**/project.pbxproj') }}
@@ -172,7 +172,7 @@ jobs:
       
     - name: Upload Archive Artifact
       if: success()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ios-archive
         path: iOS/CentralMosqueRochdale.xcarchive
