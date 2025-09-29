@@ -1,0 +1,54 @@
+name: iOS Quick Test
+
+on:
+  push:
+    branches: [ feature/*, bugfix/*, hotfix/* ]
+    paths:
+      - 'iOS/**'
+      - 'SwiftUI/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'iOS/**'
+      - 'SwiftUI/**'
+
+jobs:
+  quick-test:
+    name: Quick iOS Build Test
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+        
+    - name: Cache Derived Data
+      uses: actions/cache@v3
+      with:
+        path: ~/Library/Developer/Xcode/DerivedData
+        key: ${{ runner.os }}-quick-build-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-derived-data-
+          
+    - name: Quick Build Check
+      run: |
+        cd iOS
+        xcodebuild \
+          -project CentralMosqueRochdale.xcodeproj \
+          -scheme CentralMosqueRochdale \
+          -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' \
+          -configuration Debug \
+          -quiet \
+          clean build \
+          CODE_SIGNING_ALLOWED=NO
+          
+    - name: Swift Syntax Check
+      run: |
+        cd iOS
+        # Check for basic Swift syntax errors
+        find . -name "*.swift" -exec swift -frontend -parse {} \; 2>&1 | head -20 || true
+      continue-on-error: true

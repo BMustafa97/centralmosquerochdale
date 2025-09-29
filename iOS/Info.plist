@@ -1,0 +1,105 @@
+<!-- iOS Info.plist Configuration -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Existing app configuration -->
+    <key>CFBundleDisplayName</key>
+    <string>Central Mosque Rochdale</string>
+    
+    <key>CFBundleIdentifier</key>
+    <string>com.centralmosque.rochdale</string>
+    
+    <!-- Notification Permission Description -->
+    <key>NSUserNotificationsUsageDescription</key>
+    <string>Central Mosque Rochdale would like to send you prayer time reminders so you never miss Jamaa'ah. You can choose which prayers to be reminded about and when.</string>
+    
+    <!-- Background App Refresh (for notification scheduling) -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>background-app-refresh</string>
+        <string>remote-notification</string>
+    </array>
+    
+    <!-- Push Notification Capabilities -->
+    <key>aps-environment</key>
+    <string>development</string> <!-- Change to 'production' for App Store -->
+    
+    <!-- Location Permission (for prayer times calculation) -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Central Mosque Rochdale needs your location to provide accurate prayer times and Qibla direction for your area.</string>
+    
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Central Mosque Rochdale uses your location to provide accurate prayer times and send location-based prayer reminders.</string>
+    
+    <!-- App Transport Security -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <false/>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>api.centralmosquerochdale.org</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <false/>
+                <key>NSExceptionMinimumTLSVersion</key>
+                <string>TLSv1.2</string>
+            </dict>
+        </dict>
+    </dict>
+    
+    <!-- App Icon Configuration -->
+    <key>CFBundleIcons</key>
+    <dict>
+        <key>CFBundlePrimaryIcon</key>
+        <dict>
+            <key>CFBundleIconFiles</key>
+            <array>
+                <string>AppIcon</string>
+            </array>
+        </dict>
+    </dict>
+    
+    <!-- Supported Device Orientations -->
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+    
+    <!-- iPad Specific Orientations -->
+    <key>UISupportedInterfaceOrientations~ipad</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationPortraitUpsideDown</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+    
+    <!-- Minimum iOS Version -->
+    <key>LSMinimumSystemVersion</key>
+    <string>15.0</string>
+    
+    <!-- Launch Screen -->
+    <key>UILaunchScreen</key>
+    <dict>
+        <key>UIImageName</key>
+        <string>LaunchImage</string>
+    </dict>
+    
+    <!-- Privacy Settings -->
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array>
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>CA92.1</string> <!-- Store user preferences -->
+            </array>
+        </dict>
+    </array>
+</dict>
+</plist>
