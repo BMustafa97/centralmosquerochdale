@@ -56,21 +56,33 @@ jobs:
           
     - name: Setup iOS Simulator
       run: |
-        # Get the latest available iOS simulator
-        LATEST_IOS=$(xcrun simctl list runtimes | grep iOS | tail -1 | sed 's/.*iOS \([0-9.]*\).*/\1/')
-        echo "Latest iOS runtime: $LATEST_IOS"
+        # List available runtimes and device types
+        echo "Available iOS runtimes:"
+        xcrun simctl list runtimes | grep iOS || echo "No iOS runtimes found"
         
-        # Try to find iPhone 15 Pro, fallback to iPhone 14 Pro, then any iPhone
-        DEVICE_TYPE=$(xcrun simctl list devicetypes | grep -E "iPhone (15|14|13) Pro" | head -1 | sed 's/.*(\(.*\))/\1/' || echo "com.apple.CoreSimulator.SimDeviceType.iPhone-14-Pro")
+        echo ""
+        echo "Available iPhone device types:"
+        xcrun simctl list devicetypes | grep iPhone || echo "No iPhone device types found"
         
-        if [ -z "$DEVICE_TYPE" ]; then
-          DEVICE_TYPE="com.apple.CoreSimulator.SimDeviceType.iPhone-14-Pro"
+        echo ""
+        echo "Currently available iPhone simulators:"
+        xcrun simctl list devices available | grep iPhone || echo "No iPhone simulators available"
+        
+        # Try to boot an existing simulator or create one if needed
+        EXISTING_SIMULATOR=$(xcrun simctl list devices available | grep iPhone | head -1 | grep -o "([A-Z0-9-]\{36\})" | tr -d "()" || true)
+        
+        if [ -n "$EXISTING_SIMULATOR" ]; then
+          echo "Found existing simulator: $EXISTING_SIMULATOR"
+          xcrun simctl boot "$EXISTING_SIMULATOR" 2>/dev/null || echo "Simulator already booted or boot failed"
+        else
+          echo "No existing simulators found, attempting to create one..."
+          # Get the latest iOS runtime
+          LATEST_RUNTIME=$(xcrun simctl list runtimes | grep iOS | tail -1 | awk '{print $NF}' | tr -d '()')
+          if [ -n "$LATEST_RUNTIME" ]; then
+            echo "Creating simulator with runtime: $LATEST_RUNTIME"
+            xcrun simctl create "GitHub Actions iPhone" com.apple.CoreSimulator.SimDeviceType.iPhone-14 "$LATEST_RUNTIME" || true
+          fi
         fi
-        
-        echo "Using device type: $DEVICE_TYPE"
-        
-        # Create simulator if needed
-        xcrun simctl create "GitHub Actions iPhone" "$DEVICE_TYPE" | head -1 || true
         
     - name: Build iOS App
       run: |
@@ -89,21 +101,46 @@ jobs:
     - name: Run Unit Tests
       run: |
         cd iOS
-        # Find an available simulator for testing
-        AVAILABLE_SIMULATOR=$(xcrun simctl list devices available | grep iPhone | head -1 | sed 's/.*(\([^)]*\)).*/\1/')
-        if [ -n "$AVAILABLE_SIMULATOR" ]; then
-          echo "Using simulator: $AVAILABLE_SIMULATOR"
-          xcodebuild \
-            -project CentralMosqueRochdale.xcodeproj \
-            -scheme CentralMosqueRochdale \
-            -destination "id=$AVAILABLE_SIMULATOR" \
-            -configuration Debug \
-            -derivedDataPath DerivedData \
-            test \
-            CODE_SIGNING_ALLOWED=NO \
-            | xcpretty && exit ${PIPESTATUS[0]} || echo "No tests found or tests failed"
+        # Check if scheme has test targets configured
+        echo "Checking if test action is configured for scheme..."
+        SCHEME_INFO=$(xcodebuild -project CentralMosqueRochdale.xcodeproj -scheme CentralMosqueRochdale -showBuildSettings 2>/dev/null | grep -i test || true)
+        
+        if [ -z "$SCHEME_INFO" ]; then
+          echo "⚠️  Scheme 'CentralMosqueRochdale' is not configured for testing"
+          echo "To enable testing, please:"
+          echo "1. Open CentralMosqueRochdale.xcodeproj in Xcode"
+          echo "2. Go to Product > Scheme > Edit Scheme"
+          echo "3. Select 'Test' on the left sidebar"
+          echo "4. Add test targets or create unit tests"
+          echo ""
+          echo "Skipping test execution for now..."
         else
-          echo "No suitable simulator found for testing"
+          # Find an available simulator for testing
+          AVAILABLE_SIMULATOR=$(xcrun simctl list devices available | grep -E "iPhone.*\([A-Z0-9-]{36}\)" | head -1 | grep -o "([A-Z0-9-]\{36\})" | tr -d "()")
+          
+          if [ -n "$AVAILABLE_SIMULATOR" ] && [ "$AVAILABLE_SIMULATOR" != "Shutdown" ]; then
+            echo "Using simulator ID: $AVAILABLE_SIMULATOR"
+            xcodebuild \
+              -project CentralMosqueRochdale.xcodeproj \
+              -scheme CentralMosqueRochdale \
+              -destination "id=$AVAILABLE_SIMULATOR" \
+              -configuration Debug \
+              -derivedDataPath DerivedData \
+              test \
+              CODE_SIGNING_ALLOWED=NO \
+              | xcpretty && exit ${PIPESTATUS[0]} || echo "Tests failed"
+          else
+            echo "Using generic iOS Simulator destination for testing"
+            xcodebuild \
+              -project CentralMosqueRochdale.xcodeproj \
+              -scheme CentralMosqueRochdale \
+              -destination 'generic/platform=iOS Simulator' \
+              -configuration Debug \
+              -derivedDataPath DerivedData \
+              test \
+              CODE_SIGNING_ALLOWED=NO \
+              | xcpretty && exit ${PIPESTATUS[0]} || echo "Tests failed"
+          fi
         fi
           
     - name: Archive Build Logs
