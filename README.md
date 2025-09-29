@@ -3,13 +3,12 @@
 A comprehensive mobile app suite for Central Mosque Rochdale, built with SwiftUI (iOS) and Jetpack Compose (Android) frameworks. The app provides essential Islamic services including prayer times, Qibla compass, push notifications, and mosque events management.
 
 ## Current Visual   
-![Home iOS](docs/screenshots/homepage.png)
+<img src="docs/screenshots/homepage.png" alt="Home iOS" width="200">
 
-
-![Prayer Times iOS](docs/screenshots/prayer-times.png)
+<img src="docs/screenshots/prayer-times.png" alt="Prayer Times iOS" width="200">
 *iOS SwiftUI Prayer Times Interface*
 
-![Notification Settings iOS](docs/screenshots/notifications.png)
+<img src="docs/screenshots/notifications.png" alt="Notification Settings iOS" width="200">
 *iOS Push Notification Settings Interface*
 
 

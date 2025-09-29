@@ -1,5 +1,7 @@
 import SwiftUI
 import UserNotifications
+import CoreLocation
+import Combine
 
 // Prayer Times Models and Views
 struct PrayerTime {
@@ -155,10 +157,336 @@ struct PrayerRow: View {
     }
 }
 
+// Qibla Compass Models and Views
+class QiblaCompassViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
+    @Published var qiblaDirection: Double = 0
+    @Published var currentHeading: Double = 0
+    @Published var locationPermissionStatus: CLAuthorizationStatus = .notDetermined
+    @Published var isCalculatingQibla = false
+    @Published var errorMessage: String? = nil
+    @Published var userLocation: CLLocation? = nil
+    @Published var distanceToKaaba: Double = 0
+    
+    private let locationManager = CLLocationManager()
+    private let kaabaCoordinates = CLLocationCoordinate2D(latitude: 21.4225, longitude: 39.8262)
+    
+    override init() {
+        super.init()
+        setupLocationManager()
+    }
+    
+    private func setupLocationManager() {
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+    }
+    
+    func requestLocationPermission() {
+        locationManager.requestWhenInUseAuthorization()
+    }
+    
+    func startLocationUpdates() {
+        guard locationPermissionStatus == .authorizedWhenInUse || locationPermissionStatus == .authorizedAlways else {
+            errorMessage = "Location permission required"
+            return
+        }
+        
+        isCalculatingQibla = true
+        locationManager.startUpdatingLocation()
+        locationManager.startUpdatingHeading()
+    }
+    
+    private func calculateQiblaDirection(from userLocation: CLLocation) {
+        let userLat = userLocation.coordinate.latitude * .pi / 180
+        let userLon = userLocation.coordinate.longitude * .pi / 180
+        let kaabaLat = kaabaCoordinates.latitude * .pi / 180
+        let kaabaLon = kaabaCoordinates.longitude * .pi / 180
+        
+        let dLon = kaabaLon - userLon
+        
+        let x = sin(dLon) * cos(kaabaLat)
+        let y = cos(userLat) * sin(kaabaLat) - sin(userLat) * cos(kaabaLat) * cos(dLon)
+        
+        let qiblaRadians = atan2(x, y)
+        var qiblaDegrees = qiblaRadians * 180 / .pi
+        
+        if qiblaDegrees < 0 {
+            qiblaDegrees += 360
+        }
+        
+        self.qiblaDirection = qiblaDegrees
+        
+        // Calculate distance to Kaaba
+        let kaabaLocation = CLLocation(latitude: kaabaCoordinates.latitude, longitude: kaabaCoordinates.longitude)
+        self.distanceToKaaba = userLocation.distance(from: kaabaLocation) / 1000 // Convert to kilometers
+    }
+    
+    // MARK: - CLLocationManagerDelegate
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        DispatchQueue.main.async {
+            self.locationPermissionStatus = manager.authorizationStatus
+            if self.locationPermissionStatus == .authorizedWhenInUse || self.locationPermissionStatus == .authorizedAlways {
+                self.startLocationUpdates()
+            }
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
+        
+        DispatchQueue.main.async {
+            self.userLocation = location
+            self.calculateQiblaDirection(from: location)
+            self.isCalculatingQibla = false
+            self.errorMessage = nil
+        }
+        
+        // Stop location updates to save battery
+        locationManager.stopUpdatingLocation()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        DispatchQueue.main.async {
+            self.currentHeading = newHeading.trueHeading >= 0 ? newHeading.trueHeading : newHeading.magneticHeading
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        DispatchQueue.main.async {
+            self.errorMessage = "Failed to get location: \(error.localizedDescription)"
+            self.isCalculatingQibla = false
+        }
+    }
+}
+
 struct QiblaCompassView: View {
+    @StateObject private var viewModel = QiblaCompassViewModel()
+    
     var body: some View {
-        Text("Qibla Compass - Coming Soon!")
-            .navigationTitle("Qibla")
+        VStack(spacing: 30) {
+            // Header
+            VStack(spacing: 8) {
+                Text("🕋 Qibla Direction")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                if let location = viewModel.userLocation {
+                    Text("📍 \(formatLocation(location))")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding(.top)
+            
+            // Permission/Error Handling
+            if viewModel.locationPermissionStatus != .authorizedWhenInUse && viewModel.locationPermissionStatus != .authorizedAlways {
+                VStack(spacing: 16) {
+                    Image(systemName: "location.slash")
+                        .font(.system(size: 50))
+                        .foregroundColor(.orange)
+                    
+                    Text("Location Permission Required")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                    
+                    Text("To find the Qibla direction, please allow location access.")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                    
+                    Button("Enable Location") {
+                        viewModel.requestLocationPermission()
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .padding()
+                
+            } else if let errorMessage = viewModel.errorMessage {
+                VStack(spacing: 16) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 50))
+                        .foregroundColor(.red)
+                    
+                    Text("Error")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                    
+                    Text(errorMessage)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                    
+                    Button("Try Again") {
+                        viewModel.startLocationUpdates()
+                    }
+                    .buttonStyle(.bordered)
+                }
+                .padding()
+                
+            } else if viewModel.isCalculatingQibla {
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .scaleEffect(1.5)
+                    
+                    Text("Finding Qibla Direction...")
+                        .font(.headline)
+                        .fontWeight(.medium)
+                    
+                    Text("Getting your location...")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+                
+            } else {
+                // Main Compass View
+                VStack(spacing: 30) {
+                    // Compass
+                    ZStack {
+                        // Compass Background
+                        Circle()
+                            .stroke(Color.gray.opacity(0.3), lineWidth: 2)
+                            .frame(width: 250, height: 250)
+                        
+                        // Compass Markings
+                        ForEach(0..<36) { index in
+                            Rectangle()
+                                .fill(index % 9 == 0 ? Color.primary : Color.gray)
+                                .frame(width: index % 9 == 0 ? 3 : 1, height: index % 9 == 0 ? 20 : 10)
+                                .offset(y: -115)
+                                .rotationEffect(.degrees(Double(index) * 10))
+                        }
+                        
+                        // Cardinal Directions
+                        VStack {
+                            Text("N")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                                .offset(y: -110)
+                            Spacer()
+                            Text("S")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                                .offset(y: 110)
+                        }
+                        .frame(height: 250)
+                        
+                        HStack {
+                            Text("W")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                                .offset(x: -110)
+                            Spacer()
+                            Text("E")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                                .offset(x: 110)
+                        }
+                        .frame(width: 250)
+                        
+                        // Qibla Indicator (Fixed to Qibla direction)
+                        Image(systemName: "triangle.fill")
+                            .font(.title)
+                            .foregroundColor(.green)
+                            .offset(y: -100)
+                            .rotationEffect(.degrees(viewModel.qiblaDirection - viewModel.currentHeading))
+                        
+                        // Phone Direction Indicator
+                        Image(systemName: "phone")
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                            .offset(y: -80)
+                        
+                        // Center Kaaba
+                        Text("🕋")
+                            .font(.title)
+                    }
+                    .rotationEffect(.degrees(-viewModel.currentHeading))
+                    
+                    // Direction Info
+                    VStack(spacing: 12) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Qibla Direction")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text("\(Int(viewModel.qiblaDirection))°")
+                                    .font(.title3)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.green)
+                            }
+                            
+                            Spacer()
+                            
+                            VStack(alignment: .trailing, spacing: 4) {
+                                Text("Your Heading")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Text("\(Int(viewModel.currentHeading))°")
+                                    .font(.title3)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                        
+                        if viewModel.distanceToKaaba > 0 {
+                            HStack {
+                                Image(systemName: "location")
+                                    .foregroundColor(.secondary)
+                                Text("Distance to Kaaba: \(String(format: "%.0f", viewModel.distanceToKaaba)) km")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(12)
+                    
+                    // Instructions
+                    VStack(spacing: 8) {
+                        HStack {
+                            Image(systemName: "triangle.fill")
+                                .foregroundColor(.green)
+                            Text("Green arrow points to Qibla")
+                                .font(.caption)
+                        }
+                        
+                        HStack {
+                            Image(systemName: "phone")
+                                .foregroundColor(.blue)
+                            Text("Blue phone shows your direction")
+                                .font(.caption)
+                        }
+                        
+                        Text("Hold your phone flat and rotate until the green arrow points up")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                }
+            }
+            
+            Spacer()
+            
+            // Footer
+            Text("🕌 Central Mosque Rochdale")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding()
+        .navigationTitle("Qibla Compass")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            if viewModel.locationPermissionStatus == .authorizedWhenInUse || viewModel.locationPermissionStatus == .authorizedAlways {
+                viewModel.startLocationUpdates()
+            }
+        }
+    }
+    
+    private func formatLocation(_ location: CLLocation) -> String {
+        let formatter = CLGeocoder()
+        return "Lat: \(String(format: "%.4f", location.coordinate.latitude)), Lon: \(String(format: "%.4f", location.coordinate.longitude))"
     }
 }
 
