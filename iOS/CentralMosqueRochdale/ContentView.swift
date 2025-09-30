@@ -490,10 +490,493 @@ struct QiblaCompassView: View {
     }
 }
 
+// Mosque Events Models and Views
+struct MosqueEvent: Identifiable {
+    let id = UUID()
+    let title: String
+    let description: String
+    let date: Date
+    let time: String
+    let category: EventCategory
+    let location: String
+    let organizer: String
+    let maxAttendees: Int?
+    let currentAttendees: Int
+    let isRegistrationRequired: Bool
+    let imageSystemName: String
+    let backgroundColor: Color
+}
+
+enum EventCategory: String, CaseIterable {
+    case lecture = "Lecture"
+    case community = "Community"
+    case fundraising = "Fundraising"
+    case educational = "Educational"
+    case social = "Social"
+    case religious = "Religious"
+    case youth = "Youth"
+    case charity = "Charity"
+    
+    var icon: String {
+        switch self {
+        case .lecture: return "book.closed"
+        case .community: return "people"
+        case .fundraising: return "heart.circle"
+        case .educational: return "graduationcap"
+        case .social: return "party.popper"
+        case .religious: return "moon.stars"
+        case .youth: return "figure.2.arms.open"
+        case .charity: return "gift"
+        }
+    }
+    
+    var color: Color {
+        switch self {
+        case .lecture: return .blue
+        case .community: return .green
+        case .fundraising: return .red
+        case .educational: return .purple
+        case .social: return .orange
+        case .religious: return .indigo
+        case .youth: return .pink
+        case .charity: return .teal
+        }
+    }
+}
+
+class MosqueEventsViewModel: ObservableObject {
+    @Published var events: [MosqueEvent] = []
+    @Published var selectedCategory: EventCategory? = nil
+    @Published var isLoading = false
+    
+    init() {
+        loadMockEvents()
+    }
+    
+    private func loadMockEvents() {
+        // Create dates for upcoming events
+        let today = Date()
+        let calendar = Calendar.current
+        
+        events = [
+            MosqueEvent(
+                title: "Friday Night Lecture Series",
+                description: "Join us for an enlightening lecture on 'The Importance of Community in Islam' by Imam Abdullah. This weekly series focuses on building stronger bonds within our Muslim community and understanding our responsibilities toward one another.",
+                date: calendar.date(byAdding: .day, value: 2, to: today) ?? today,
+                time: "7:30 PM - 9:00 PM",
+                category: .lecture,
+                location: "Main Prayer Hall",
+                organizer: "Imam Abdullah",
+                maxAttendees: 150,
+                currentAttendees: 87,
+                isRegistrationRequired: false,
+                imageSystemName: "book.closed.fill",
+                backgroundColor: .blue.opacity(0.1)
+            ),
+            
+            MosqueEvent(
+                title: "Community Iftar Preparation",
+                description: "Help us prepare for the upcoming community Iftar. We need volunteers to help with cooking, setting up tables, and welcoming guests. This is a great opportunity to earn rewards while serving our community.",
+                date: calendar.date(byAdding: .day, value: 5, to: today) ?? today,
+                time: "2:00 PM - 6:00 PM",
+                category: .community,
+                location: "Community Kitchen",
+                organizer: "Sister Fatima",
+                maxAttendees: 30,
+                currentAttendees: 18,
+                isRegistrationRequired: true,
+                imageSystemName: "person.3.fill",
+                backgroundColor: .green.opacity(0.1)
+            ),
+            
+            MosqueEvent(
+                title: "Mosque Expansion Fundraiser",
+                description: "Annual fundraising dinner to support the mosque expansion project. Enjoy a delicious three-course meal while contributing to the growth of our Islamic center. Silent auction items available.",
+                date: calendar.date(byAdding: .day, value: 12, to: today) ?? today,
+                time: "6:00 PM - 10:00 PM",
+                category: .fundraising,
+                location: "Community Hall",
+                organizer: "Fundraising Committee",
+                maxAttendees: 200,
+                currentAttendees: 156,
+                isRegistrationRequired: true,
+                imageSystemName: "heart.circle.fill",
+                backgroundColor: .red.opacity(0.1)
+            ),
+            
+            MosqueEvent(
+                title: "Arabic Classes for Beginners",
+                description: "Start your journey learning Arabic with our qualified teacher. Perfect for those who want to better understand the Quran and Islamic texts. Classes include basic grammar, vocabulary, and reading skills.",
+                date: calendar.date(byAdding: .day, value: 7, to: today) ?? today,
+                time: "10:00 AM - 12:00 PM",
+                category: .educational,
+                location: "Classroom A",
+                organizer: "Ustadh Omar",
+                maxAttendees: 25,
+                currentAttendees: 12,
+                isRegistrationRequired: true,
+                imageSystemName: "graduationcap.fill",
+                backgroundColor: .purple.opacity(0.1)
+            ),
+            
+            MosqueEvent(
+                title: "Youth Sports Tournament",
+                description: "Annual youth sports day featuring football, basketball, and table tennis competitions. Open to all youth aged 12-18. Prizes for winners and refreshments provided. Bring your friends!",
+                date: calendar.date(byAdding: .day, value: 15, to: today) ?? today,
+                time: "9:00 AM - 5:00 PM",
+                category: .youth,
+                location: "Sports Ground",
+                organizer: "Youth Committee",
+                maxAttendees: 80,
+                currentAttendees: 45,
+                isRegistrationRequired: true,
+                imageSystemName: "figure.2.arms.open",
+                backgroundColor: .pink.opacity(0.1)
+            ),
+            
+            MosqueEvent(
+                title: "Night of Remembrance (Dhikr)",
+                description: "Join us for a peaceful evening of dhikr and remembrance of Allah. We'll recite beautiful supplications, reflect on our faith, and strengthen our spiritual connection together.",
+                date: calendar.date(byAdding: .day, value: 3, to: today) ?? today,
+                time: "8:00 PM - 10:00 PM",
+                category: .religious,
+                location: "Main Prayer Hall",
+                organizer: "Imam Abdullah",
+                maxAttendees: nil,
+                currentAttendees: 0,
+                isRegistrationRequired: false,
+                imageSystemName: "moon.stars.fill",
+                backgroundColor: .indigo.opacity(0.1)
+            )
+        ]
+    }
+    
+    var filteredEvents: [MosqueEvent] {
+        if let selectedCategory = selectedCategory {
+            return events.filter { $0.category == selectedCategory }
+        }
+        return events.sorted { $0.date < $1.date }
+    }
+}
+
 struct MosqueEventsView: View {
+    @StateObject private var viewModel = MosqueEventsViewModel()
+    @State private var showingEventDetail = false
+    @State private var selectedEvent: MosqueEvent? = nil
+    
     var body: some View {
-        Text("Mosque Events - Coming Soon!")
-            .navigationTitle("Events")
+        ScrollView {
+            VStack(spacing: 20) {
+                // Header
+                VStack(spacing: 12) {
+                    Text("🕌 Upcoming Events")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    Text("Stay connected with our mosque community")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.top)
+                
+                // Category Filter
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        CategoryFilterButton(
+                            title: "All Events",
+                            isSelected: viewModel.selectedCategory == nil,
+                            color: .blue
+                        ) {
+                            viewModel.selectedCategory = nil
+                        }
+                        
+                        ForEach(EventCategory.allCases, id: \.self) { category in
+                            CategoryFilterButton(
+                                title: category.rawValue,
+                                isSelected: viewModel.selectedCategory == category,
+                                color: category.color
+                            ) {
+                                viewModel.selectedCategory = category == viewModel.selectedCategory ? nil : category
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                
+                // Events List
+                LazyVStack(spacing: 16) {
+                    ForEach(viewModel.filteredEvents) { event in
+                        EventCard(event: event) {
+                            selectedEvent = event
+                            showingEventDetail = true
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                
+                // Footer
+                VStack(spacing: 8) {
+                    Text("🕌 Central Mosque Rochdale")
+                        .font(.footnote)
+                        .fontWeight(.medium)
+                    
+                    Text("Building community through faith and fellowship")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding()
+            }
+        }
+        .navigationTitle("Events")
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showingEventDetail) {
+            if let event = selectedEvent {
+                EventDetailView(event: event)
+            }
+        }
+    }
+}
+
+struct CategoryFilterButton: View {
+    let title: String
+    let isSelected: Bool
+    let color: Color
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.caption)
+                .fontWeight(.medium)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(isSelected ? color : Color.gray.opacity(0.1))
+                .foregroundColor(isSelected ? .white : .primary)
+                .cornerRadius(20)
+        }
+    }
+}
+
+struct EventCard: View {
+    let event: MosqueEvent
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 12) {
+                // Header with category and date
+                HStack {
+                    HStack(spacing: 6) {
+                        Image(systemName: event.category.icon)
+                            .foregroundColor(event.category.color)
+                        Text(event.category.rawValue)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(event.category.color)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(event.category.color.opacity(0.1))
+                    .cornerRadius(8)
+                    
+                    Spacer()
+                    
+                    Text(formatDate(event.date))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                // Event Title and Description
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(event.title)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                    
+                    Text(event.description)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+                }
+                
+                // Event Details
+                VStack(spacing: 6) {
+                    HStack {
+                        Image(systemName: "clock")
+                            .foregroundColor(.blue)
+                        Text(event.time)
+                            .font(.caption)
+                        Spacer()
+                        Image(systemName: "location")
+                            .foregroundColor(.blue)
+                        Text(event.location)
+                            .font(.caption)
+                    }
+                    
+                    if let maxAttendees = event.maxAttendees {
+                        HStack {
+                            Image(systemName: "person.2")
+                                .foregroundColor(.green)
+                            Text("\(event.currentAttendees)/\(maxAttendees) attending")
+                                .font(.caption)
+                            
+                            Spacer()
+                            
+                            if event.isRegistrationRequired {
+                                Text("Registration Required")
+                                    .font(.caption)
+                                    .foregroundColor(.orange)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(Color.orange.opacity(0.1))
+                                    .cornerRadius(4)
+                            }
+                        }
+                    }
+                }
+                .foregroundColor(.secondary)
+                
+                // Action Footer
+                HStack {
+                    Text("Organized by \(event.organizer)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding()
+            .background(event.backgroundColor)
+            .cornerRadius(12)
+            .shadow(color: .gray.opacity(0.1), radius: 3, x: 0, y: 2)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, yyyy"
+        return formatter.string(from: date)
+    }
+}
+
+struct EventDetailView: View {
+    let event: MosqueEvent
+    @Environment(\.presentationMode) var presentationMode
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    // Event Header
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Image(systemName: event.imageSystemName)
+                                .font(.title)
+                                .foregroundColor(event.category.color)
+                            
+                            VStack(alignment: .leading) {
+                                Text(event.category.rawValue)
+                                    .font(.caption)
+                                    .foregroundColor(event.category.color)
+                                Text(formatDate(event.date))
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        
+                        Text(event.title)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                    }
+                    
+                    Divider()
+                    
+                    // Event Details
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Event Details")
+                            .font(.headline)
+                        
+                        Text(event.description)
+                            .font(.body)
+                            .lineSpacing(4)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            DetailRow(icon: "clock", title: "Time", value: event.time)
+                            DetailRow(icon: "location", title: "Location", value: event.location)
+                            DetailRow(icon: "person", title: "Organizer", value: event.organizer)
+                            
+                            if let maxAttendees = event.maxAttendees {
+                                DetailRow(icon: "person.2", title: "Attendance", value: "\(event.currentAttendees)/\(maxAttendees)")
+                            }
+                        }
+                    }
+                    
+                    if event.isRegistrationRequired {
+                        Divider()
+                        
+                        VStack(spacing: 12) {
+                            Text("Registration Required")
+                                .font(.headline)
+                            
+                            Text("Please register to secure your spot for this event.")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            
+                            Button("Register Now") {
+                                // Registration action
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.large)
+                        }
+                    }
+                    
+                    Spacer(minLength: 50)
+                }
+                .padding()
+            }
+            .navigationTitle("Event Details")
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarItems(trailing: Button("Done") {
+                presentationMode.wrappedValue.dismiss()
+            })
+        }
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .full
+        return formatter.string(from: date)
+    }
+}
+
+struct DetailRow: View {
+    let icon: String
+    let title: String
+    let value: String
+    
+    var body: some View {
+        HStack {
+            Image(systemName: icon)
+                .foregroundColor(.blue)
+                .frame(width: 20)
+            
+            Text(title)
+                .fontWeight(.medium)
+            
+            Spacer()
+            
+            Text(value)
+                .foregroundColor(.secondary)
+        }
     }
 }
 
@@ -745,9 +1228,6 @@ struct ContentView: View {
                     .lineSpacing(4)
                     .padding(.top, 20)
                 
-                Text("Welcome to the Mosque App")
-                    .font(.title2)
-                    .foregroundColor(.secondary)
                 
                 VStack(spacing: 20) {
                     NavigationLink(destination: PrayerTimesView()) {
