@@ -14,11 +14,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C001000000000000000003AA /* CentralMosqueRochdale.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CentralMosqueRochdale.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C001000000000000000001BB /* CentralMosqueRochdaleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CentralMosqueRochdaleApp.swift; sourceTree = "<group>"; };
 		C001000000000000000001DD /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		C001000000000000000001FF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C001000000000000000002BB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		C001000000000000000003AA /* CentralMosqueRochdale.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CentralMosqueRochdale.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C001000000000000000003CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -33,7 +33,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C001000000000000000003EE /* */ = {
+		C001000000000000000003EE = {
 			isa = PBXGroup;
 			children = (
 				C001000000000000000003FF /* CentralMosqueRochdale */,
@@ -97,7 +97,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					C001000000000000000004CC = {
 						CreatedOnToolsVersion = 15.0;
@@ -112,7 +112,7 @@
 				en,
 				Base,
 			);
-			mainGroup = C001000000000000000003EE /* */;
+			mainGroup = C001000000000000000003EE;
 			productRefGroup = C001000000000000000004AA /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -182,6 +182,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = M3TAG5VJQB;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -199,12 +200,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -245,6 +247,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = M3TAG5VJQB;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -256,11 +259,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -303,6 +307,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CentralMosqueRochdale/Preview Content\"";
+				DEVELOPMENT_TEAM = M3TAG5VJQB;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = CentralMosqueRochdale/Info.plist;
@@ -327,20 +332,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C00100000000000000000511 /* Build configuration list for PBXProject "CentralMosqueRochdale" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C00100000000000000000522 /* Debug */,
-				C00100000000000000000533 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		C001000000000000000004DD /* Build configuration list for PBXNativeTarget "CentralMosqueRochdale" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C00100000000000000000544 /* Debug */,
 				C00100000000000000000555 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C00100000000000000000511 /* Build configuration list for PBXProject "CentralMosqueRochdale" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C00100000000000000000522 /* Debug */,
+				C00100000000000000000533 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

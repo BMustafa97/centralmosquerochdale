@@ -485,7 +485,6 @@ struct QiblaCompassView: View {
     }
     
     private func formatLocation(_ location: CLLocation) -> String {
-        let formatter = CLGeocoder()
         return "Lat: \(String(format: "%.4f", location.coordinate.latitude)), Lon: \(String(format: "%.4f", location.coordinate.longitude))"
     }
 }
@@ -981,7 +980,7 @@ struct DetailRow: View {
 }
 
 // Notification Settings Models and Views
-struct PrayerNotificationSetting {
+struct PrayerNotificationSetting: Equatable {
     let prayer: String
     let icon: String
     var isEnabled: Bool
@@ -1001,8 +1000,20 @@ class NotificationSettingsViewModel: ObservableObject {
     @Published var jummahReminderMinutes = 30
     @Published var notificationsPermissionGranted = false
     
+    // Prayer times for notification scheduling (Jamaa'ah times)
+    private let prayerJamaahTimes = [
+        "Fajr": "6:00",
+        "Dhuhr": "1:15", 
+        "Asr": "4:00",
+        "Maghrib": "6:25",
+        "Esha": "8:00"
+    ]
+    
+    private let jummahTime = "1:30"
+    
     init() {
         checkNotificationPermission()
+        scheduleAllNotifications()
     }
     
     func checkNotificationPermission() {
@@ -1017,8 +1028,114 @@ class NotificationSettingsViewModel: ObservableObject {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, _ in
             DispatchQueue.main.async {
                 self.notificationsPermissionGranted = granted
+                if granted {
+                    self.scheduleAllNotifications()
+                }
             }
         }
+    }
+    
+    // MARK: - Notification Scheduling
+    
+    func scheduleAllNotifications() {
+        guard notificationsPermissionGranted else { return }
+        
+        // Cancel existing notifications
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        
+        // Schedule daily prayer notifications
+        for (index, setting) in prayerNotifications.enumerated() {
+            if setting.isEnabled {
+                schedulePrayerNotification(for: setting, at: index)
+            }
+        }
+        
+        // Schedule Jummah notification
+        if jummahEnabled {
+            scheduleJummahNotification()
+        }
+    }
+    
+    private func schedulePrayerNotification(for setting: PrayerNotificationSetting, at index: Int) {
+        guard let jamaahTimeString = prayerJamaahTimes[setting.prayer],
+              let jamaahTime = timeFromString(jamaahTimeString) else { return }
+        
+        // Calculate notification time (reminder minutes before Jamaa'ah)
+        let notificationTime = Calendar.current.date(byAdding: .minute, value: -setting.reminderMinutes, to: jamaahTime)!
+        
+        let content = UNMutableNotificationContent()
+        content.title = "🕌 Prayer Reminder"
+        content.body = "\(setting.prayer) Jamaa'ah in \(setting.reminderMinutes) minutes at Central Mosque Rochdale"
+        content.sound = .default
+        content.badge = 1
+        
+        // Create daily repeating trigger
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.hour, .minute], from: notificationTime)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+        
+        let request = UNNotificationRequest(
+            identifier: "prayer-\(setting.prayer.lowercased())",
+            content: content,
+            trigger: trigger
+        )
+        
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Error scheduling \(setting.prayer) notification: \(error)")
+            }
+        }
+    }
+    
+    private func scheduleJummahNotification() {
+        guard let jummahTimeObj = timeFromString(jummahTime) else { return }
+        
+        // Calculate notification time
+        let notificationTime = Calendar.current.date(byAdding: .minute, value: -jummahReminderMinutes, to: jummahTimeObj)!
+        
+        let content = UNMutableNotificationContent()
+        content.title = "🕌 Jummah Prayer Reminder"
+        content.body = "Jummah prayer in \(jummahReminderMinutes) minutes at Central Mosque Rochdale. Don't miss the congregation!"
+        content.sound = .default
+        content.badge = 1
+        
+        // Schedule for Fridays only
+        let calendar = Calendar.current
+        var components = calendar.dateComponents([.hour, .minute], from: notificationTime)
+        components.weekday = 6 // Friday
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
+        
+        let request = UNNotificationRequest(
+            identifier: "jummah-prayer",
+            content: content,
+            trigger: trigger
+        )
+        
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Error scheduling Jummah notification: \(error)")
+            }
+        }
+    }
+    
+    private func timeFromString(_ timeString: String) -> Date? {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        formatter.dateFormat = "H:mm"
+        
+        if let time = formatter.date(from: timeString) {
+            // Convert to today's date with this time
+            let calendar = Calendar.current
+            let now = Date()
+            let timeComponents = calendar.dateComponents([.hour, .minute], from: time)
+            return calendar.date(bySettingHour: timeComponents.hour ?? 0, minute: timeComponents.minute ?? 0, second: 0, of: now)
+        }
+        return nil
+    }
+    
+    func updateNotificationSettings() {
+        scheduleAllNotifications()
     }
 }
 
@@ -1078,7 +1195,7 @@ struct NotificationSettingsView: View {
                     Text("Daily Prayer Reminders")
                 }
             } footer: {
-                Text("Receive notifications before each prayer time to never miss Jamaa'ah.")
+                Text("Receive notifications before Jamaa'ah (congregation) prayer times to never miss praying with the community at the mosque.")
                     .font(.caption)
             }
             
@@ -1170,6 +1287,15 @@ struct NotificationSettingsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             viewModel.checkNotificationPermission()
+        }
+        .onChange(of: viewModel.prayerNotifications) { _ in
+            viewModel.updateNotificationSettings()
+        }
+        .onChange(of: viewModel.jummahEnabled) { _ in
+            viewModel.updateNotificationSettings()
+        }
+        .onChange(of: viewModel.jummahReminderMinutes) { _ in
+            viewModel.updateNotificationSettings()
         }
     }
 }

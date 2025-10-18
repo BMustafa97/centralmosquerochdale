@@ -2,10 +2,29 @@
 
 Comprehensive push notification system for prayer reminders using Apple Push Notification Service (APNs) for iOS and Firebase Cloud Messaging (FCM) for Android.
 
+## ⚠️ IMPORTANT: Notification Timing Strategy
+
+**The notifications are designed to remind users about JAMAA'AH (congregation) times, NOT individual prayer start times.**
+
+### Current Prayer Schedule & Notification Targets:
+
+| Prayer | Start Time | Jamaa'ah Time | **Notification Target** |
+|--------|------------|---------------|------------------------|
+| Fajr | 5:45 AM | **6:00 AM** | ✅ **6:00 AM** |
+| Dhuhr | 12:30 PM | **1:15 PM** | ✅ **1:15 PM** |
+| Asr | 3:45 PM | **4:00 PM** | ✅ **4:00 PM** |
+| Maghrib | 6:20 PM | **6:25 PM** | ✅ **6:25 PM** |
+| Esha | 7:45 PM | **8:00 PM** | ✅ **8:00 PM** |
+
+### Why Jamaa'ah Times?
+- **Community Focus**: Mosque serves congregation, not individual prayers
+- **Practical**: Users need to know when to be AT the mosque
+- **Islamic Value**: Congregation prayer has greater spiritual reward
+
 ## Features
 
 - **Individual Prayer Toggles**: Enable/disable notifications for each of the five daily prayers
-- **Customizable Reminder Times**: Choose 5, 10, or 15 minutes before Jamaa'ah time
+- **Customizable Reminder Times**: Choose 5, 10, 15, or 30 minutes before **Jamaa'ah time**
 - **Local & Remote Notifications**: Support for both local scheduled notifications and remote push notifications
 - **Permission Management**: Proper notification permission handling with clear user prompts
 - **Persistent Settings**: User preferences saved locally and synchronized
