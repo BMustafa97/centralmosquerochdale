@@ -72,27 +72,30 @@ struct PrayerTimesView: View {
                         Text("Prayer")
                             .font(.headline)
                             .fontWeight(.semibold)
+                            .foregroundColor(.primary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
                         Text("Start Time")
                             .font(.headline)
                             .fontWeight(.semibold)
+                            .foregroundColor(.primary)
                             .frame(maxWidth: .infinity)
                         
                         Text("Jamaa'ah")
                             .font(.headline)
                             .fontWeight(.semibold)
+                            .foregroundColor(.primary)
                             .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                     .padding()
-                    .background(Color.blue.opacity(0.1))
+                    .background(Color.blue.opacity(0.15))
                     
                     // Prayer Rows
                     ForEach(Array(prayerTimes.enumerated()), id: \.offset) { index, prayer in
                         PrayerRow(prayer: prayer, isEven: index % 2 == 0)
                     }
                 }
-                .background(Color.white)
+                .background(Color(UIColor.secondarySystemBackground))
                 .cornerRadius(12)
                 .shadow(color: .gray.opacity(0.2), radius: 5, x: 0, y: 2)
                 .padding(.horizontal)
@@ -137,12 +140,14 @@ struct PrayerRow: View {
                 Text(prayer.name)
                     .font(.body)
                     .fontWeight(.medium)
+                    .foregroundColor(.primary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
             Text(prayer.startTime)
                 .font(.body)
                 .fontWeight(.regular)
+                .foregroundColor(.primary)
                 .frame(maxWidth: .infinity)
             
             Text(prayer.jamaahTime)
@@ -153,7 +158,7 @@ struct PrayerRow: View {
         }
         .padding(.vertical, 12)
         .padding(.horizontal)
-        .background(isEven ? Color.gray.opacity(0.05) : Color.clear)
+        .background(isEven ? Color(UIColor.tertiarySystemBackground) : Color.clear)
     }
 }
 
@@ -1346,6 +1351,8 @@ struct PrayerNotificationRow: View {
 }
 
 struct ContentView: View {
+    @EnvironmentObject var themeManager: ThemeManager
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 30) {
@@ -1374,6 +1381,11 @@ struct ContentView: View {
                     
                     NavigationLink(destination: NotificationSettingsView()) {
                         FeatureRow(icon: "bell", title: "Notifications", description: "Prayer reminders")
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    
+                    NavigationLink(destination: SettingsView()) {
+                        FeatureRow(icon: "gearshape.fill", title: "Settings", description: "App preferences & theme")
                     }
                     .buttonStyle(PlainButtonStyle())
                 }
