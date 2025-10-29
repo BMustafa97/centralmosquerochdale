@@ -48,6 +48,21 @@ playground.xcworkspace
 # hence it is not needed unless you have added a package configuration file to your project
 # .swiftpm
 
+## Code Signing (Security - Never commit these!)
+*.p12
+*.mobileprovision
+*.provisionprofile
+*.certSigningRequest
+*.cer
+*.p8
+AuthKey_*.p8
+
+## Xcode Project User Settings (May contain sensitive team/certificate info)
+*.xcworkspace/xcuserdata/
+project.xcworkspace/xcuserdata/
+*.xcuserstate
+.DS_Store
+
 .build/
 
 # CocoaPods
@@ -237,3 +252,5 @@ captures/
 
 # Project specific
 docs/screenshots/*.png
+
+iOS/CentralMosqueRochdale.xcodeproj/project.xcworkspace/xcuserdata/
