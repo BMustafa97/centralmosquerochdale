@@ -485,6 +485,7 @@ struct QiblaCompassView: View {
     }
     
     private func formatLocation(_ location: CLLocation) -> String {
+        let formatter = CLGeocoder()
         return "Lat: \(String(format: "%.4f", location.coordinate.latitude)), Lon: \(String(format: "%.4f", location.coordinate.longitude))"
     }
 }
