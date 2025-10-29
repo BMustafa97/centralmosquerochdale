@@ -12,6 +12,7 @@ struct PrayerTime {
 }
 
 struct PrayerTimesView: View {
+    @EnvironmentObject var themeManager: ThemeManager
     let prayerTimes = [
         PrayerTime(name: "Fajr", startTime: "5:45", jamaahTime: "6:00", icon: "sunrise"),
         PrayerTime(name: "Dhuhr", startTime: "12:30", jamaahTime: "1:15", icon: "sun.max"),
@@ -23,95 +24,103 @@ struct PrayerTimesView: View {
     let jummahTime = "1:30"
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                // Header
-                VStack(spacing: 8) {
-                    Text("Today's Prayer Times")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    
-                    Text(getCurrentDate())
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                .padding(.top)
-                
-                // Jummah Special Section
-                VStack(spacing: 12) {
-                    HStack {
-                        Image(systemName: "calendar")
-                            .foregroundColor(.green)
+        ZStack {
+            themeManager.backgroundColor.ignoresSafeArea()
+            
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Header
+                    VStack(spacing: 8) {
+                        Text("Today's Prayer Times")
                             .font(.title2)
-                        Text("Jummah Prayer")
-                            .font(.headline)
                             .fontWeight(.semibold)
-                        Spacer()
-                    }
-                    
-                    HStack {
-                        Text("Friday Jamaa'ah")
+                            .foregroundColor(themeManager.textPrimary)
+                        
+                        Text(getCurrentDate())
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        Text(jummahTime)
-                            .font(.title3)
-                            .fontWeight(.bold)
-                            .foregroundColor(.green)
+                            .foregroundColor(themeManager.textSecondary)
                     }
-                }
-                .padding()
-                .background(Color.green.opacity(0.1))
-                .cornerRadius(12)
-                .padding(.horizontal)
-                
-                // Prayer Times Table
-                VStack(spacing: 0) {
-                    // Table Header
-                    HStack {
-                        Text("Prayer")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.primary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top)
+                    
+                    // Jummah Special Section
+                    VStack(spacing: 12) {
+                        HStack {
+                            Image(systemName: "calendar")
+                                .foregroundColor(themeManager.accentColor)
+                                .font(.title2)
+                            Text("Jummah Prayer")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(themeManager.textPrimary)
+                            Spacer()
+                        }
                         
-                        Text("Start Time")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.primary)
-                            .frame(maxWidth: .infinity)
-                        
-                        Text("Jamaa'ah")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.primary)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
+                        HStack {
+                            Text("Friday Jamaa'ah")
+                                .font(.subheadline)
+                                .foregroundColor(themeManager.textSecondary)
+                            Spacer()
+                            Text(jummahTime)
+                                .font(.title3)
+                                .fontWeight(.bold)
+                                .foregroundColor(themeManager.accentColor)
+                        }
                     }
                     .padding()
-                    .background(Color.blue.opacity(0.15))
+                    .background(themeManager.accentColor.opacity(0.15))
+                    .cornerRadius(12)
+                    .padding(.horizontal)
                     
-                    // Prayer Rows
-                    ForEach(Array(prayerTimes.enumerated()), id: \.offset) { index, prayer in
-                        PrayerRow(prayer: prayer, isEven: index % 2 == 0)
+                    // Prayer Times Table
+                    VStack(spacing: 0) {
+                        // Table Header
+                        HStack {
+                            Text("Prayer")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(themeManager.cardBackground)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            Text("Start Time")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(themeManager.cardBackground)
+                                .frame(maxWidth: .infinity)
+                            
+                            Text("Jamaa'ah")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(themeManager.cardBackground)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                        }
+                        .padding()
+                        .background(themeManager.primaryColor)
+                        
+                        // Prayer Rows
+                        ForEach(Array(prayerTimes.enumerated()), id: \.offset) { index, prayer in
+                            PrayerRow(prayer: prayer, isEven: index % 2 == 0)
+                                .environmentObject(themeManager)
+                        }
                     }
-                }
-                .background(Color(UIColor.secondarySystemBackground))
-                .cornerRadius(12)
-                .shadow(color: .gray.opacity(0.2), radius: 5, x: 0, y: 2)
-                .padding(.horizontal)
-                
-                // Footer Info
-                VStack(spacing: 8) {
-                    Text("🕌 Central Mosque Rochdale")
-                        .font(.footnote)
-                        .fontWeight(.medium)
+                    .background(themeManager.cardBackground)
+                    .cornerRadius(12)
+                    .shadow(color: themeManager.primaryColor.opacity(0.2), radius: 5, x: 0, y: 2)
+                    .padding(.horizontal)
                     
-                    Text("Prayer times are calculated for Rochdale, UK")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
+                    // Footer Info
+                    VStack(spacing: 8) {
+                        Text("🕌 Central Mosque Rochdale")
+                            .font(.footnote)
+                            .fontWeight(.medium)
+                            .foregroundColor(themeManager.primaryColor)
+                        
+                        Text("Prayer times are calculated for Rochdale, UK")
+                            .font(.caption)
+                            .foregroundColor(themeManager.textSecondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding()
                 }
-                .padding()
             }
         }
         .navigationTitle("Prayer Times")
@@ -126,6 +135,7 @@ struct PrayerTimesView: View {
 }
 
 struct PrayerRow: View {
+    @EnvironmentObject var themeManager: ThemeManager
     let prayer: PrayerTime
     let isEven: Bool
     
@@ -133,32 +143,32 @@ struct PrayerRow: View {
         HStack {
             HStack(spacing: 12) {
                 Image(systemName: prayer.icon)
-                    .foregroundColor(.blue)
+                    .foregroundColor(themeManager.primaryColor)
                     .font(.title3)
                     .frame(width: 20)
                 
                 Text(prayer.name)
                     .font(.body)
                     .fontWeight(.medium)
-                    .foregroundColor(.primary)
+                    .foregroundColor(themeManager.textPrimary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
             Text(prayer.startTime)
                 .font(.body)
                 .fontWeight(.regular)
-                .foregroundColor(.primary)
+                .foregroundColor(themeManager.textPrimary)
                 .frame(maxWidth: .infinity)
             
             Text(prayer.jamaahTime)
                 .font(.body)
                 .fontWeight(.bold)
-                .foregroundColor(.blue)
+                .foregroundColor(themeManager.accentColor)
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .padding(.vertical, 12)
         .padding(.horizontal)
-        .background(isEven ? Color(UIColor.tertiarySystemBackground) : Color.clear)
+        .background(isEven ? themeManager.backgroundColor.opacity(0.5) : Color.clear)
     }
 }
 
@@ -265,221 +275,240 @@ class QiblaCompassViewModel: NSObject, ObservableObject, CLLocationManagerDelega
 }
 
 struct QiblaCompassView: View {
+    @EnvironmentObject var themeManager: ThemeManager
     @StateObject private var viewModel = QiblaCompassViewModel()
     
     var body: some View {
-        VStack(spacing: 30) {
-            // Header
-            VStack(spacing: 8) {
-                Text("🕋 Qibla Direction")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                
-                if let location = viewModel.userLocation {
-                    Text("📍 \(formatLocation(location))")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-            .padding(.top)
+        ZStack {
+            themeManager.backgroundColor.ignoresSafeArea()
             
-            // Permission/Error Handling
-            if viewModel.locationPermissionStatus != .authorizedWhenInUse && viewModel.locationPermissionStatus != .authorizedAlways {
-                VStack(spacing: 16) {
-                    Image(systemName: "location.slash")
-                        .font(.system(size: 50))
-                        .foregroundColor(.orange)
+            VStack(spacing: 30) {
+                // Header
+                VStack(spacing: 8) {
+                    Text("🕋 Qibla Direction")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(themeManager.textPrimary)
                     
-                    Text("Location Permission Required")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                    
-                    Text("To find the Qibla direction, please allow location access.")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                    
-                    Button("Enable Location") {
-                        viewModel.requestLocationPermission()
+                    if let location = viewModel.userLocation {
+                        Text("📍 \(formatLocation(location))")
+                            .font(.caption)
+                            .foregroundColor(themeManager.textSecondary)
                     }
-                    .buttonStyle(.borderedProminent)
                 }
-                .padding()
+                .padding(.top)
                 
-            } else if let errorMessage = viewModel.errorMessage {
-                VStack(spacing: 16) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .font(.system(size: 50))
-                        .foregroundColor(.red)
-                    
-                    Text("Error")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                    
-                    Text(errorMessage)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                    
-                    Button("Try Again") {
-                        viewModel.startLocationUpdates()
-                    }
-                    .buttonStyle(.bordered)
-                }
-                .padding()
-                
-            } else if viewModel.isCalculatingQibla {
-                VStack(spacing: 16) {
-                    ProgressView()
-                        .scaleEffect(1.5)
-                    
-                    Text("Finding Qibla Direction...")
-                        .font(.headline)
-                        .fontWeight(.medium)
-                    
-                    Text("Getting your location...")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                .padding()
-                
-            } else {
-                // Main Compass View
-                VStack(spacing: 30) {
-                    // Compass
-                    ZStack {
-                        // Compass Background
-                        Circle()
-                            .stroke(Color.gray.opacity(0.3), lineWidth: 2)
-                            .frame(width: 250, height: 250)
+                // Permission/Error Handling
+                if viewModel.locationPermissionStatus != .authorizedWhenInUse && viewModel.locationPermissionStatus != .authorizedAlways {
+                    VStack(spacing: 16) {
+                        Image(systemName: "location.slash")
+                            .font(.system(size: 50))
+                            .foregroundColor(themeManager.accentColor)
                         
-                        // Compass Markings
-                        ForEach(0..<36) { index in
-                            Rectangle()
-                                .fill(index % 9 == 0 ? Color.primary : Color.gray)
-                                .frame(width: index % 9 == 0 ? 3 : 1, height: index % 9 == 0 ? 20 : 10)
-                                .offset(y: -115)
-                                .rotationEffect(.degrees(Double(index) * 10))
+                        Text("Location Permission Required")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(themeManager.textPrimary)
+                        
+                        Text("To find the Qibla direction, please allow location access.")
+                            .font(.subheadline)
+                            .foregroundColor(themeManager.textSecondary)
+                            .multilineTextAlignment(.center)
+                        
+                        Button("Enable Location") {
+                            viewModel.requestLocationPermission()
                         }
-                        
-                        // Cardinal Directions
-                        VStack {
-                            Text("N")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                                .offset(y: -110)
-                            Spacer()
-                            Text("S")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                                .offset(y: 110)
-                        }
-                        .frame(height: 250)
-                        
-                        HStack {
-                            Text("W")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                                .offset(x: -110)
-                            Spacer()
-                            Text("E")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                                .offset(x: 110)
-                        }
-                        .frame(width: 250)
-                        
-                        // Qibla Indicator (Fixed to Qibla direction)
-                        Image(systemName: "triangle.fill")
-                            .font(.title)
-                            .foregroundColor(.green)
-                            .offset(y: -100)
-                            .rotationEffect(.degrees(viewModel.qiblaDirection - viewModel.currentHeading))
-                        
-                        // Phone Direction Indicator
-                        Image(systemName: "phone")
-                            .font(.title2)
-                            .foregroundColor(.blue)
-                            .offset(y: -80)
-                        
-                        // Center Kaaba
-                        Text("🕋")
-                            .font(.title)
-                    }
-                    .rotationEffect(.degrees(-viewModel.currentHeading))
-                    
-                    // Direction Info
-                    VStack(spacing: 12) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Qibla Direction")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text("\(Int(viewModel.qiblaDirection))°")
-                                    .font(.title3)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.green)
-                            }
-                            
-                            Spacer()
-                            
-                            VStack(alignment: .trailing, spacing: 4) {
-                                Text("Your Heading")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text("\(Int(viewModel.currentHeading))°")
-                                    .font(.title3)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.blue)
-                            }
-                        }
-                        
-                        if viewModel.distanceToKaaba > 0 {
-                            HStack {
-                                Image(systemName: "location")
-                                    .foregroundColor(.secondary)
-                                Text("Distance to Kaaba: \(String(format: "%.0f", viewModel.distanceToKaaba)) km")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(themeManager.primaryColor)
                     }
                     .padding()
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(12)
                     
-                    // Instructions
-                    VStack(spacing: 8) {
-                        HStack {
-                            Image(systemName: "triangle.fill")
-                                .foregroundColor(.green)
-                            Text("Green arrow points to Qibla")
-                                .font(.caption)
-                        }
+                } else if let errorMessage = viewModel.errorMessage {
+                    VStack(spacing: 16) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.system(size: 50))
+                            .foregroundColor(themeManager.accentColor)
                         
-                        HStack {
-                            Image(systemName: "phone")
-                                .foregroundColor(.blue)
-                            Text("Blue phone shows your direction")
-                                .font(.caption)
-                        }
+                        Text("Error")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(themeManager.textPrimary)
                         
-                        Text("Hold your phone flat and rotate until the green arrow points up")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        Text(errorMessage)
+                            .font(.subheadline)
+                            .foregroundColor(themeManager.textSecondary)
                             .multilineTextAlignment(.center)
+                        
+                        Button("Try Again") {
+                            viewModel.startLocationUpdates()
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(themeManager.primaryColor)
+                    }
+                    .padding()
+                    
+                } else if viewModel.isCalculatingQibla {
+                    VStack(spacing: 16) {
+                        ProgressView()
+                            .scaleEffect(1.5)
+                            .tint(themeManager.primaryColor)
+                        
+                        Text("Finding Qibla Direction...")
+                            .font(.headline)
+                            .fontWeight(.medium)
+                            .foregroundColor(themeManager.textPrimary)
+                        
+                        Text("Getting your location...")
+                            .font(.subheadline)
+                            .foregroundColor(themeManager.textSecondary)
+                    }
+                    .padding()
+                    
+                } else {
+                    // Main Compass View
+                    VStack(spacing: 30) {
+                        // Compass
+                        ZStack {
+                            // Compass Background
+                            Circle()
+                                .stroke(themeManager.secondaryColor.opacity(0.3), lineWidth: 2)
+                                .frame(width: 250, height: 250)
+                            
+                            // Compass Markings
+                            ForEach(0..<36) { index in
+                                Rectangle()
+                                    .fill(index % 9 == 0 ? themeManager.primaryColor : themeManager.textSecondary)
+                                    .frame(width: index % 9 == 0 ? 3 : 1, height: index % 9 == 0 ? 20 : 10)
+                                    .offset(y: -115)
+                                    .rotationEffect(.degrees(Double(index) * 10))
+                            }
+                            
+                            // Cardinal Directions
+                            VStack {
+                                Text("N")
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(themeManager.primaryColor)
+                                    .offset(y: -110)
+                                Spacer()
+                                Text("S")
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(themeManager.primaryColor)
+                                    .offset(y: 110)
+                            }
+                            .frame(height: 250)
+                            
+                            HStack {
+                                Text("W")
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(themeManager.primaryColor)
+                                    .offset(x: -110)
+                                Spacer()
+                                Text("E")
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(themeManager.primaryColor)
+                                    .offset(x: 110)
+                            }
+                            .frame(width: 250)
+                            
+                            // Qibla Indicator (Fixed to Qibla direction)
+                            Image(systemName: "triangle.fill")
+                                .font(.title)
+                                .foregroundColor(themeManager.accentColor)
+                                .offset(y: -100)
+                                .rotationEffect(.degrees(viewModel.qiblaDirection - viewModel.currentHeading))
+                            
+                            // Phone Direction Indicator
+                            Image(systemName: "phone")
+                                .font(.title2)
+                                .foregroundColor(themeManager.secondaryColor)
+                                .offset(y: -80)
+                            
+                            // Center Kaaba
+                            Text("🕋")
+                                .font(.title)
+                        }
+                        .rotationEffect(.degrees(-viewModel.currentHeading))
+                        
+                        // Direction Info
+                        VStack(spacing: 12) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Qibla Direction")
+                                        .font(.caption)
+                                        .foregroundColor(themeManager.textSecondary)
+                                    Text("\(Int(viewModel.qiblaDirection))°")
+                                        .font(.title3)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(themeManager.accentColor)
+                                }
+                                
+                                Spacer()
+                                
+                                VStack(alignment: .trailing, spacing: 4) {
+                                    Text("Your Heading")
+                                        .font(.caption)
+                                        .foregroundColor(themeManager.textSecondary)
+                                    Text("\(Int(viewModel.currentHeading))°")
+                                        .font(.title3)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(themeManager.secondaryColor)
+                                }
+                            }
+                            
+                            if viewModel.distanceToKaaba > 0 {
+                                HStack {
+                                    Image(systemName: "location")
+                                        .foregroundColor(themeManager.textSecondary)
+                                    Text("Distance to Kaaba: \(String(format: "%.0f", viewModel.distanceToKaaba)) km")
+                                        .font(.caption)
+                                        .foregroundColor(themeManager.textSecondary)
+                                }
+                            }
+                        }
+                        .padding()
+                        .background(themeManager.cardBackground)
+                        .cornerRadius(12)
+                        .shadow(color: themeManager.primaryColor.opacity(0.1), radius: 3, x: 0, y: 2)
+                        
+                        // Instructions
+                        VStack(spacing: 8) {
+                            HStack {
+                                Image(systemName: "triangle.fill")
+                                    .foregroundColor(themeManager.accentColor)
+                                Text("Green arrow points to Qibla")
+                                    .font(.caption)
+                                    .foregroundColor(themeManager.textSecondary)
+                            }
+                            
+                            HStack {
+                                Image(systemName: "phone")
+                                    .foregroundColor(themeManager.secondaryColor)
+                                Text("Blue phone shows your direction")
+                                    .font(.caption)
+                                    .foregroundColor(themeManager.textSecondary)
+                            }
+                            
+                            Text("Hold your phone flat and rotate until the green arrow points up")
+                                .font(.caption)
+                                .foregroundColor(themeManager.textSecondary)
+                                .multilineTextAlignment(.center)
+                        }
                     }
                 }
+                
+                Spacer()
+                
+                // Footer
+                Text("🕌 Central Mosque Rochdale")
+                    .font(.caption)
+                    .foregroundColor(themeManager.primaryColor)
             }
-            
-            Spacer()
-            
-            // Footer
-            Text("🕌 Central Mosque Rochdale")
-                .font(.caption)
-                .foregroundColor(.secondary)
+            .padding()
         }
-        .padding()
         .navigationTitle("Qibla Compass")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
@@ -1355,50 +1384,70 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 30) {
-                Text("🕌 Central Mosque\nRochdale")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(4)
+            ZStack {
+                themeManager.backgroundColor.ignoresSafeArea()
+                
+                VStack(spacing: 30) {
+                    // Header with branding
+                    VStack(spacing: 12) {
+                        Text("🕌")
+                            .font(.system(size: 50))
+                        
+                        Text("Central Mosque Rochdale")
+                            .font(.system(size: 26, weight: .bold, design: .rounded))
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(themeManager.primaryColor)
+                            .lineSpacing(4)
+                        
+                        Text("Prayer • Community • Guidance")
+                            .font(.subheadline)
+                            .foregroundColor(themeManager.textSecondary)
+                    }
                     .padding(.top, 20)
-                
-                
-                VStack(spacing: 20) {
-                    NavigationLink(destination: PrayerTimesView()) {
-                        FeatureRow(icon: "clock", title: "Prayer Times", description: "View daily prayer schedule")
-                    }
-                    .buttonStyle(PlainButtonStyle())
                     
-                    NavigationLink(destination: QiblaCompassView()) {
-                        FeatureRow(icon: "safari", title: "Qibla Compass", description: "Find prayer direction")
+                    VStack(spacing: 16) {
+                        NavigationLink(destination: PrayerTimesView().environmentObject(themeManager)) {
+                            FeatureRow(icon: "clock", title: "Prayer Times", description: "View daily prayer schedule")
+                                .environmentObject(themeManager)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        NavigationLink(destination: QiblaCompassView().environmentObject(themeManager)) {
+                            FeatureRow(icon: "safari", title: "Qibla Compass", description: "Find prayer direction")
+                                .environmentObject(themeManager)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        NavigationLink(destination: MosqueEventsView().environmentObject(themeManager)) {
+                            FeatureRow(icon: "calendar", title: "Events", description: "Mosque events & announcements")
+                                .environmentObject(themeManager)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        NavigationLink(destination: NotificationSettingsView().environmentObject(themeManager)) {
+                            FeatureRow(icon: "bell", title: "Notifications", description: "Prayer reminders")
+                                .environmentObject(themeManager)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        NavigationLink(destination: SettingsView()) {
+                            FeatureRow(icon: "gearshape.fill", title: "Settings", description: "App preferences & theme")
+                                .environmentObject(themeManager)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    .padding()
                     
-                    NavigationLink(destination: MosqueEventsView()) {
-                        FeatureRow(icon: "calendar", title: "Events", description: "Mosque events & announcements")
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    
-                    NavigationLink(destination: NotificationSettingsView()) {
-                        FeatureRow(icon: "bell", title: "Notifications", description: "Prayer reminders")
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    
-                    NavigationLink(destination: SettingsView()) {
-                        FeatureRow(icon: "gearshape.fill", title: "Settings", description: "App preferences & theme")
-                    }
-                    .buttonStyle(PlainButtonStyle())
+                    Spacer()
                 }
                 .padding()
-                
-                Spacer()
             }
-            .padding()
         }
     }
 }
 
 struct FeatureRow: View {
+    @EnvironmentObject var themeManager: ThemeManager
     let icon: String
     let title: String
     let description: String
@@ -1407,27 +1456,28 @@ struct FeatureRow: View {
         HStack(spacing: 15) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundColor(.blue)
+                .foregroundColor(themeManager.primaryColor)
                 .frame(width: 30)
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.headline)
-                    .foregroundColor(.primary)
+                    .foregroundColor(themeManager.textPrimary)
                 Text(description)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(themeManager.textSecondary)
             }
             
             Spacer()
             
             Image(systemName: "chevron.right")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(themeManager.accentColor)
         }
         .padding()
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(10)
+        .background(themeManager.cardBackground)
+        .cornerRadius(12)
+        .shadow(color: themeManager.primaryColor.opacity(0.1), radius: 3, x: 0, y: 2)
     }
 }
 
