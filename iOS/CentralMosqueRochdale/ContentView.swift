@@ -1390,8 +1390,12 @@ struct ContentView: View {
                 VStack(spacing: 30) {
                     // Header with branding
                     VStack(spacing: 12) {
-                        Text("🕌")
-                            .font(.system(size: 50))
+                        Image("MosqueLogo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 80, height: 80)
+                            .cornerRadius(16)
+                            .shadow(color: themeManager.primaryColor.opacity(0.3), radius: 8, x: 0, y: 4)
                         
                         Text("Central Mosque Rochdale")
                             .font(.system(size: 26, weight: .bold, design: .rounded))
