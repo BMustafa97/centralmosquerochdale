@@ -1434,6 +1434,12 @@ struct ContentView: View {
                         }
                         .buttonStyle(PlainButtonStyle())
                         
+                        NavigationLink(destination: DonationView().environmentObject(themeManager)) {
+                            FeatureRow(icon: "heart.fill", title: "Donate", description: "Support your mosque")
+                                .environmentObject(themeManager)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        
                         NavigationLink(destination: SettingsView()) {
                             FeatureRow(icon: "gearshape.fill", title: "Settings", description: "App preferences & theme")
                                 .environmentObject(themeManager)

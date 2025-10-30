@@ -13,6 +13,7 @@
 		C001000000000000000002AA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C001000000000000000002BB /* Preview Assets.xcassets */; };
 		F3EDC6642EB2A90900316F09 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EDC6632EB2A90900316F09 /* ThemeManager.swift */; };
 		F3EDC6662EB2A91F00316F09 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EDC6652EB2A91F00316F09 /* SettingsView.swift */; };
+		F3EDC6682EB429DE00316F09 /* DonationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EDC6672EB429DE00316F09 /* DonationView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		C001000000000000000003CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F3EDC6632EB2A90900316F09 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		F3EDC6652EB2A91F00316F09 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F3EDC6672EB429DE00316F09 /* DonationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,6 +50,7 @@
 		C001000000000000000003FF /* CentralMosqueRochdale */ = {
 			isa = PBXGroup;
 			children = (
+				F3EDC6672EB429DE00316F09 /* DonationView.swift */,
 				C001000000000000000001BB /* CentralMosqueRochdaleApp.swift */,
 				C001000000000000000001DD /* ContentView.swift */,
 				F3EDC6632EB2A90900316F09 /* ThemeManager.swift */,
@@ -146,6 +149,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C001000000000000000001CC /* ContentView.swift in Sources */,
+				F3EDC6682EB429DE00316F09 /* DonationView.swift in Sources */,
 				F3EDC6662EB2A91F00316F09 /* SettingsView.swift in Sources */,
 				C001000000000000000001AA /* CentralMosqueRochdaleApp.swift in Sources */,
 				F3EDC6642EB2A90900316F09 /* ThemeManager.swift in Sources */,
