@@ -6,7 +6,12 @@ A comprehensive mobile app suite for Central Mosque Rochdale, built with SwiftUI
 
 | iOS SwiftUI Home Interface | iOS SwiftUI Prayer Times Interface | iOS Push Notification Settings Interface |
 |:---------------------------:|:-----------------------------------:|:-----------------------------------------:|
-| <img src="docs/screenshots/homepage.png" alt="Home iOS" width="200"> | <img src="docs/screenshots/prayer-times.png" alt="Prayer Times iOS" width="200"> | <img src="docs/screenshots/notifications.png" alt="Notification Settings iOS" width="200"> |
+| <img src="docs/screenshots/homepage-themed.png" alt="Home iOS" width="280"> | <img src="docs/screenshots/prayer-times-themed.png" alt="Prayer Times iOS" width="220"> | <img src="docs/screenshots/notifications.png" alt="Notification Settings iOS" width="180"> |
+
+| iOS SwiftUI Home Interface | iOS SwiftUI Prayer Times Interface | iOS Qibla Interface |
+|:---------------------------:|:-----------------------------------:|:-----------------------------------------:|
+| <img src="docs/screenshots/homepage-themed-dark.png" alt="Home iOS" width="280"> | <img src="docs/screenshots/prayer-times-themed-dark.png" alt="Prayer Times iOS" width="220"> | <img src="docs/screenshots/qibla-themed-dark.png" alt="Qibla Themed iOS" width="180"> |
+
 
 
 ## 🕌 Core Features
