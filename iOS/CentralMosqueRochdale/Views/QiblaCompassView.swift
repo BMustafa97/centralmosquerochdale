@@ -12,12 +12,20 @@ class QiblaLocationManager: NSObject, ObservableObject, CLLocationManagerDelegat
     @Published var isLocationEnabled = false
     @Published var errorMessage: String?
     
-    // Mecca coordinates
+    // Kaaba coordinates (exact location in Makkah)
     private let meccaCoordinate = CLLocationCoordinate2D(latitude: 21.4225, longitude: 39.8262)
     
     override init() {
         super.init()
         setupLocationManager()
+    }
+    
+    // Calculate distance to Makkah in kilometers
+    func calculateDistanceToMakkah() -> Double? {
+        guard let currentLocation = location else { return nil }
+        let meccaLocation = CLLocation(latitude: meccaCoordinate.latitude, longitude: meccaCoordinate.longitude)
+        let distanceInMeters = currentLocation.distance(from: meccaLocation)
+        return distanceInMeters / 1000.0 // Convert to kilometers
     }
     
     private func setupLocationManager() {
@@ -133,9 +141,19 @@ struct QiblaCompassContent: View {
     @ObservedObject var locationManager: QiblaLocationManager
     @Binding var compassRotation: Double
     
-    var qiblaDirection: Double {
-        guard let direction = locationManager.calculateQiblaDirection() else { return 0 }
-        return direction - locationManager.heading
+    // Rotation needed to align compass so that user's heading is at bottom
+    // and Qibla direction is at top
+    var compassRotationAngle: Double {
+        // Rotate the compass based on device heading
+        return -locationManager.heading
+    }
+    
+    // Calculate if user is aligned with Qibla (within tolerance)
+    var isAlignedWithQibla: Bool {
+        guard let qiblaDir = locationManager.calculateQiblaDirection() else { return false }
+        let difference = abs(qiblaDir - locationManager.heading)
+        let normalizedDiff = min(difference, 360 - difference)
+        return normalizedDiff < 15 // Within 15 degrees is considered aligned
     }
     
     var body: some View {
@@ -143,27 +161,55 @@ struct QiblaCompassContent: View {
             // Location Info
             LocationInfoView(location: locationManager.location)
             
-            // Compass
+            // Instructions
+            VStack(spacing: 8) {
+                Image(systemName: isAlignedWithQibla ? "checkmark.circle.fill" : "arrow.up.circle.fill")
+                    .font(.system(size: 40))
+                    .foregroundColor(isAlignedWithQibla ? .green : .blue)
+                    .animation(.easeInOut, value: isAlignedWithQibla)
+                
+                Text(isAlignedWithQibla ? "Aligned with Qibla!" : "Rotate to face Qibla")
+                    .font(.headline)
+                    .foregroundColor(isAlignedWithQibla ? .green : .primary)
+                
+                Text("The green arrow at the top points to Mecca")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding()
+            .background(isAlignedWithQibla ? Color.green.opacity(0.1) : Color.blue.opacity(0.05))
+            .cornerRadius(12)
+            
+            // Compass with fixed Qibla at top
             ZStack {
-                // Compass Background
+                // Compass Background that rotates with device heading
                 CompassBackgroundView()
+                    .rotationEffect(.degrees(compassRotationAngle))
+                    .animation(.easeInOut(duration: 0.3), value: compassRotationAngle)
                 
-                // Qibla Needle
-                QiblaNeedleView()
-                    .rotationEffect(.degrees(qiblaDirection))
-                    .animation(.easeInOut(duration: 0.5), value: qiblaDirection)
+                // Fixed Qibla indicator at top (north)
+                QiblaIndicatorView()
+                    .rotationEffect(.degrees(locationManager.calculateQiblaDirection() ?? 0))
+                    .rotationEffect(.degrees(compassRotationAngle))
+                    .animation(.easeInOut(duration: 0.3), value: compassRotationAngle)
                 
-                // Center Dot
-                Circle()
-                    .fill(Color.primary)
-                    .frame(width: 8, height: 8)
+                // Device indicator (always at bottom - user's current direction)
+                DeviceIndicatorView()
+                
+                // Center Kaaba icon
+                Image(systemName: "house.fill")
+                    .font(.system(size: 20))
+                    .foregroundColor(.green)
             }
             .frame(width: 280, height: 280)
             
             // Direction Info
-            DirectionInfoView(
+            EnhancedDirectionInfoView(
                 qiblaDirection: locationManager.calculateQiblaDirection(),
-                currentHeading: locationManager.heading
+                currentHeading: locationManager.heading,
+                isAligned: isAlignedWithQibla,
+                distanceToMakkah: locationManager.calculateDistanceToMakkah()
             )
             
             Spacer()
@@ -233,6 +279,64 @@ struct QiblaNeedleView: View {
                 .rotationEffect(.degrees(180))
         }
         .frame(height: 250)
+    }
+}
+
+// Qibla indicator that stays fixed at top of screen
+struct QiblaIndicatorView: View {
+    var body: some View {
+        VStack {
+            // Large arrow pointing up (to Qibla/Mecca)
+            ZStack {
+                // Glow effect
+                Triangle()
+                    .fill(Color.green.opacity(0.3))
+                    .frame(width: 30, height: 90)
+                    .blur(radius: 5)
+                
+                Triangle()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.green, Color.green.opacity(0.8)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .frame(width: 20, height: 85)
+                    .shadow(color: .green.opacity(0.5), radius: 3, x: 0, y: 0)
+                
+                // Kaaba icon at the tip
+                Image(systemName: "figure.walk")
+                    .font(.system(size: 12))
+                    .foregroundColor(.white)
+                    .offset(y: -25)
+            }
+            
+            Spacer()
+        }
+        .frame(height: 260)
+    }
+}
+
+// Device indicator showing user's current direction (fixed at bottom)
+struct DeviceIndicatorView: View {
+    var body: some View {
+        VStack {
+            Spacer()
+            
+            VStack(spacing: 4) {
+                // Phone icon
+                Image(systemName: "iphone")
+                    .font(.system(size: 24))
+                    .foregroundColor(.blue)
+                
+                Text("YOU")
+                    .font(.caption2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.blue)
+            }
+        }
+        .frame(height: 260)
     }
 }
 
@@ -311,10 +415,106 @@ struct DirectionInfoView: View {
                 }
             }
             
-            Text("Point your device toward the green needle to face Qibla")
+            Text("Point your device toward the needle to face Qibla")
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
+        }
+        .padding()
+        .background(Color(UIColor.systemGray6))
+        .cornerRadius(12)
+    }
+}
+
+struct EnhancedDirectionInfoView: View {
+    let qiblaDirection: Double?
+    let currentHeading: Double
+    let isAligned: Bool
+    let distanceToMakkah: Double?
+    
+    var degreesToTurn: Double {
+        guard let qiblaDir = qiblaDirection else { return 0 }
+        let diff = qiblaDir - currentHeading
+        // Normalize to -180 to 180 range
+        if diff > 180 {
+            return diff - 360
+        } else if diff < -180 {
+            return diff + 360
+        }
+        return diff
+    }
+    
+    var turnDirection: String {
+        if abs(degreesToTurn) < 15 {
+            return "You're facing Qibla!"
+        } else if degreesToTurn > 0 {
+            return "Turn right \(Int(abs(degreesToTurn)))°"
+        } else {
+            return "Turn left \(Int(abs(degreesToTurn)))°"
+        }
+    }
+    
+    var formattedDistance: String {
+        guard let distance = distanceToMakkah else { return "Calculating..." }
+        if distance > 1000 {
+            return String(format: "%.0f km", distance)
+        } else {
+            return String(format: "%.1f km", distance)
+        }
+    }
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // Turn instruction
+            HStack {
+                if !isAligned {
+                    Image(systemName: degreesToTurn > 0 ? "arrow.turn.up.right" : "arrow.turn.up.left")
+                        .font(.title2)
+                        .foregroundColor(.blue)
+                }
+                
+                Text(turnDirection)
+                    .font(.headline)
+                    .foregroundColor(isAligned ? .green : .blue)
+                    .fontWeight(.semibold)
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(isAligned ? Color.green.opacity(0.15) : Color.blue.opacity(0.1))
+            .cornerRadius(12)
+            
+            // Detailed info
+            HStack(spacing: 30) {
+                VStack {
+                    Text("Qibla")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(qiblaDirection != nil ? String(format: "%.0f°", qiblaDirection!) : "N/A")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .foregroundColor(.green)
+                }
+                
+                VStack {
+                    Text("You")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(String(format: "%.0f°", currentHeading))
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .foregroundColor(.blue)
+                }
+                
+                VStack {
+                    Text("Distance")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(formattedDistance)
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .foregroundColor(.orange)
+                }
+            }
         }
         .padding()
         .background(Color(UIColor.systemGray6))

@@ -1,0 +1,50 @@
+{
+  "year": 2025,
+  "mosque": "Central Mosque Rochdale",
+  "location": {
+    "latitude": 53.6097,
+    "longitude": -2.1561
+  },
+  "prayerTimes": [
+    {
+      "date": "2025-01-01",
+      "fajr": { "adhan": "06:05", "jamaah": "06:20" },
+      "sunrise": "08:26",
+      "dhuhr": { "adhan": "12:15", "jamaah": "13:00" },
+      "asr": { "adhan": "14:00", "jamaah": "14:15" },
+      "maghrib": { "adhan": "16:06", "jamaah": "16:11" },
+      "isha": { "adhan": "18:05", "jamaah": "18:20" },
+      "jummah": "13:00"
+    },
+    {
+      "date": "2025-11-12",
+      "fajr": { "adhan": "05:30", "jamaah": "05:45" },
+      "sunrise": "07:25",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:45" },
+      "asr": { "adhan": "14:15", "jamaah": "14:30" },
+      "maghrib": { "adhan": "16:30", "jamaah": "16:35" },
+      "isha": { "adhan": "18:15", "jamaah": "18:30" },
+      "jummah": "13:00"
+    },
+    {
+      "date": "2025-11-13",
+      "fajr": { "adhan": "05:32", "jamaah": "05:47" },
+      "sunrise": "07:27",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:45" },
+      "asr": { "adhan": "14:13", "jamaah": "14:28" },
+      "maghrib": { "adhan": "16:28", "jamaah": "16:33" },
+      "isha": { "adhan": "18:13", "jamaah": "18:28" },
+      "jummah": "13:00"
+    },
+    {
+      "date": "2025-12-25",
+      "fajr": { "adhan": "06:10", "jamaah": "06:25" },
+      "sunrise": "08:30",
+      "dhuhr": { "adhan": "12:10", "jamaah": "12:50" },
+      "asr": { "adhan": "13:50", "jamaah": "14:05" },
+      "maghrib": { "adhan": "15:55", "jamaah": "16:00" },
+      "isha": { "adhan": "17:50", "jamaah": "18:05" },
+      "jummah": "13:00"
+    }
+  ]
+}

@@ -479,7 +479,7 @@ struct QiblaCompassView: View {
                             HStack {
                                 Image(systemName: "triangle.fill")
                                     .foregroundColor(themeManager.accentColor)
-                                Text("Green arrow points to Qibla")
+                                Text("Arrow points to Qibla")
                                     .font(.caption)
                                     .foregroundColor(themeManager.textSecondary)
                             }
@@ -487,7 +487,7 @@ struct QiblaCompassView: View {
                             HStack {
                                 Image(systemName: "phone")
                                     .foregroundColor(themeManager.secondaryColor)
-                                Text("Blue phone shows your direction")
+                                Text("Phone shows your direction")
                                     .font(.caption)
                                     .foregroundColor(themeManager.textSecondary)
                             }
@@ -1430,6 +1430,12 @@ struct ContentView: View {
                         
                         NavigationLink(destination: NotificationSettingsView().environmentObject(themeManager)) {
                             FeatureRow(icon: "bell", title: "Notifications", description: "Prayer reminders")
+                                .environmentObject(themeManager)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        NavigationLink(destination: DonationView().environmentObject(themeManager)) {
+                            FeatureRow(icon: "heart.fill", title: "Donate", description: "Support your mosque")
                                 .environmentObject(themeManager)
                         }
                         .buttonStyle(PlainButtonStyle())
