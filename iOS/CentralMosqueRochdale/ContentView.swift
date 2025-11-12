@@ -479,7 +479,7 @@ struct QiblaCompassView: View {
                             HStack {
                                 Image(systemName: "triangle.fill")
                                     .foregroundColor(themeManager.accentColor)
-                                Text("Green arrow points to Qibla")
+                                Text("Arrow points to Qibla")
                                     .font(.caption)
                                     .foregroundColor(themeManager.textSecondary)
                             }
@@ -487,7 +487,7 @@ struct QiblaCompassView: View {
                             HStack {
                                 Image(systemName: "phone")
                                     .foregroundColor(themeManager.secondaryColor)
-                                Text("Blue phone shows your direction")
+                                Text("Phone shows your direction")
                                     .font(.caption)
                                     .foregroundColor(themeManager.textSecondary)
                             }
