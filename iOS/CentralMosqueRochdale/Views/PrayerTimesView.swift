@@ -51,25 +51,51 @@ class PrayerTimesService: ObservableObject {
     @Published var errorMessage: String?
     @Published var currentDate: String = ""
     @Published var jummahTime: String = "13:00"
+    @Published var selectedDate: Date = Date()
     
     private var yearlyData: YearlyPrayerTimes?
     
-    func fetchPrayerTimes() {
+    func fetchPrayerTimes(for date: Date = Date()) {
         isLoading = true
         errorMessage = nil
+        selectedDate = date
         
-        // Get today's date in YYYY-MM-DD format
+        // Get date in YYYY-MM-DD format
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        let todayString = dateFormatter.string(from: Date())
+        let dateString = dateFormatter.string(from: date)
         
         // Format for display
         let displayFormatter = DateFormatter()
         displayFormatter.dateFormat = "EEEE, d MMMM yyyy"
-        currentDate = displayFormatter.string(from: Date())
+        currentDate = displayFormatter.string(from: date)
         
         // Load JSON file
-        loadPrayerTimesFromJSON(for: todayString)
+        loadPrayerTimesFromJSON(for: dateString)
+    }
+    
+    func goToNextDay() {
+        let daysForward = Calendar.current.dateComponents([.day], from: Date(), to: selectedDate).day ?? 0
+        if daysForward < 5, let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: selectedDate) {
+            fetchPrayerTimes(for: nextDay)
+        }
+    }
+    
+    func goToPreviousDay() {
+        let daysBack = Calendar.current.dateComponents([.day], from: selectedDate, to: Date()).day ?? 0
+        if daysBack < 1, let previousDay = Calendar.current.date(byAdding: .day, value: -1, to: selectedDate) {
+            fetchPrayerTimes(for: previousDay)
+        }
+    }
+    
+    var canGoForward: Bool {
+        let daysForward = Calendar.current.dateComponents([.day], from: Date(), to: selectedDate).day ?? 0
+        return daysForward < 5
+    }
+    
+    var canGoBack: Bool {
+        let daysBack = Calendar.current.dateComponents([.day], from: selectedDate, to: Date()).day ?? 0
+        return daysBack < 1
     }
     
     private func loadPrayerTimesFromJSON(for dateString: String) {
@@ -130,10 +156,69 @@ class PrayerTimesService: ObservableObject {
 // MARK: - SwiftUI Views
 struct PrayerTimesView: View {
     @StateObject private var service = PrayerTimesService()
+    @EnvironmentObject var themeManager: ThemeManager
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationView {
-            VStack {
+        ZStack {
+            themeManager.backgroundColor.ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Date Navigation Header
+                HStack {
+                    // Home button
+                    Button(action: {
+                        dismiss()
+                    }) {
+                        Image(systemName: "house.fill")
+                            .font(.title3)
+                            .foregroundColor(themeManager.primaryColor)
+                            .frame(width: 40, height: 40)
+                    }
+                    
+                    Button(action: {
+                        service.goToPreviousDay()
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .font(.title2)
+                            .foregroundColor(service.canGoBack ? themeManager.primaryColor : themeManager.textSecondary.opacity(0.3))
+                            .frame(width: 44, height: 44)
+                    }
+                    .disabled(!service.canGoBack)
+                    
+                    Spacer()
+                    
+                    Text(service.currentDate)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(themeManager.textPrimary)
+                        .multilineTextAlignment(.center)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        service.goToNextDay()
+                    }) {
+                        Image(systemName: "chevron.right")
+                            .font(.title2)
+                            .foregroundColor(service.canGoForward ? themeManager.primaryColor : themeManager.textSecondary.opacity(0.3))
+                            .frame(width: 44, height: 44)
+                    }
+                    .disabled(!service.canGoForward)
+                    
+                    // Notification button
+                    NavigationLink(destination: NotificationSettingsView()) {
+                        Image(systemName: "bell")
+                            .font(.title3)
+                            .foregroundColor(themeManager.primaryColor)
+                            .frame(width: 40, height: 40)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 12)
+                .background(themeManager.cardBackground)
+                .shadow(color: themeManager.primaryColor.opacity(0.1), radius: 2, x: 0, y: 2)
+                
                 if service.isLoading {
                     ProgressView("Loading prayer times...")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -143,7 +228,7 @@ struct PrayerTimesView: View {
                             .font(.largeTitle)
                             .foregroundColor(.orange)
                         Text(errorMessage)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(themeManager.textSecondary)
                             .padding()
                         Button("Retry") {
                             service.fetchPrayerTimes()
@@ -152,35 +237,71 @@ struct PrayerTimesView: View {
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
-                    VStack(spacing: 0) {
-                        // Date Header
-                        if !service.currentDate.isEmpty {
-                            Text(service.currentDate)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .padding(.top, 8)
-                                .padding(.bottom, 4)
+                    ScrollView {
+                        VStack(spacing: 20) {
+                            // Title
+                            Text("Prayer Times")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundColor(themeManager.textPrimary)
+                                .padding(.top)
+                            
+                            // Jummah Section
+                            VStack(spacing: 12) {
+                                HStack {
+                                    Image(systemName: "calendar")
+                                        .foregroundColor(themeManager.accentColor)
+                                        .font(.title2)
+                                    Text("Jummah Prayer")
+                                        .font(.headline)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(themeManager.textPrimary)
+                                    Spacer()
+                                }
+                                
+                                HStack {
+                                    Text("Friday Jamaa'ah")
+                                        .font(.subheadline)
+                                        .foregroundColor(themeManager.textSecondary)
+                                    Spacer()
+                                    Text(service.jummahTime)
+                                        .font(.title3)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(themeManager.accentColor)
+                                }
+                            }
+                            .padding()
+                            .background(themeManager.accentColor.opacity(0.15))
+                            .cornerRadius(12)
+                            .padding(.horizontal)
+                            
+                            PrayerTimesTable(prayers: service.prayers, jummahTime: service.jummahTime)
+                                .environmentObject(themeManager)
+                            
+                            // Footer Info
+                            VStack(spacing: 8) {
+                                Text("🕌 Central Mosque Rochdale")
+                                    .font(.footnote)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(themeManager.primaryColor)
+                                
+                                Text("Prayer times are calculated for Rochdale, UK")
+                                    .font(.caption)
+                                    .foregroundColor(themeManager.textSecondary)
+                                    .multilineTextAlignment(.center)
+                            }
+                            .padding()
                         }
-                        
-                        PrayerTimesTable(prayers: service.prayers, jummahTime: service.jummahTime)
                     }
                 }
             }
-            .navigationTitle("Prayer Times")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink(destination: NotificationSettingsView()) {
-                        Image(systemName: "bell")
-                            .font(.title3)
-                    }
-                }
-            }
-            .onAppear {
-                service.fetchPrayerTimes()
-            }
-            .refreshable {
-                service.fetchPrayerTimes()
-            }
+        }
+        .navigationBarHidden(true)
+        .onAppear {
+            service.fetchPrayerTimes()
+        }
+        .refreshable {
+            service.fetchPrayerTimes()
         }
     }
 }
@@ -188,6 +309,7 @@ struct PrayerTimesView: View {
 struct PrayerTimesTable: View {
     let prayers: [Prayer]
     let jummahTime: String
+    @EnvironmentObject var themeManager: ThemeManager
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -195,58 +317,89 @@ struct PrayerTimesTable: View {
             HStack {
                 Text("Prayer")
                     .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(themeManager.cardBackground)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Text("Start Time")
                     .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(themeManager.cardBackground)
                     .frame(maxWidth: .infinity, alignment: .center)
                 
                 Text("Jamaa'ah")
                     .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(themeManager.cardBackground)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .padding()
-            .background(Color(UIColor.systemGray5))
+            .background(themeManager.primaryColor)
             
             Divider()
             
             // Prayer rows
-            ForEach(prayers) { prayer in
-                PrayerRowView(prayer: prayer)
+            ForEach(Array(prayers.enumerated()), id: \.element.id) { index, prayer in
+                PrayerRowView(prayer: prayer, isEven: index % 2 == 0)
+                    .environmentObject(themeManager)
                 if prayer.id != prayers.last?.id {
                     Divider()
+                        .background(themeManager.textSecondary.opacity(0.3))
                 }
             }
         }
-        .background(Color(UIColor.systemBackground))
+        .background(themeManager.cardBackground)
         .cornerRadius(12)
-        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
-        .padding()
+        .shadow(color: themeManager.primaryColor.opacity(0.2), radius: 5, x: 0, y: 2)
+        .padding(.horizontal)
     }
 }
 
 struct PrayerRowView: View {
     let prayer: Prayer
+    let isEven: Bool
+    @EnvironmentObject var themeManager: ThemeManager
+    
+    var prayerIcon: String {
+        switch prayer.name {
+        case "Fajr": return "sunrise"
+        case "Sunrise": return "sun.and.horizon"
+        case "Dhuhr": return "sun.max"
+        case "Asr": return "sun.min"
+        case "Maghrib": return "sunset"
+        case "Isha": return "moon.stars"
+        default: return "clock"
+        }
+    }
     
     var body: some View {
         HStack {
-            Text(prayer.name)
-                .font(.body)
-                .fontWeight(.medium)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            HStack(spacing: 12) {
+                Image(systemName: prayerIcon)
+                    .foregroundColor(themeManager.primaryColor)
+                    .font(.title3)
+                    .frame(width: 20)
+                
+                Text(prayer.name)
+                    .font(.body)
+                    .fontWeight(.medium)
+                    .foregroundColor(themeManager.textPrimary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
             Text(prayer.startTime)
                 .font(.body)
-                .foregroundColor(.secondary)
+                .foregroundColor(themeManager.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .center)
             
             Text(prayer.jamaaahTime)
                 .font(.body)
                 .fontWeight(.semibold)
-                .foregroundColor(.primary)
+                .foregroundColor(themeManager.accentColor)
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .padding()
+        .background(isEven ? themeManager.cardBackground : themeManager.backgroundColor.opacity(0.3))
     }
 }
 
@@ -254,5 +407,6 @@ struct PrayerRowView: View {
 struct PrayerTimesView_Previews: PreviewProvider {
     static var previews: some View {
         PrayerTimesView()
+            .environmentObject(ThemeManager())
     }
 }
