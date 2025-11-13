@@ -36,6 +36,18 @@ struct ContentView: View {
                                 .environmentObject(themeManager)
                         }
                         .buttonStyle(PlainButtonStyle())
+
+                        NavigationLink(destination: MosqueEventsView().environmentObject(themeManager)) {
+                            FeatureRow(icon: "calendar", title: "Events", description: "Mosque events & announcements")
+                                .environmentObject(themeManager)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+
+                        NavigationLink(destination: DonationView().environmentObject(themeManager)) {
+                            FeatureRow(icon: "hands.sparkles.fill", title: "Donate", description: "Support your mosque")
+                                .environmentObject(themeManager)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                         
                         NavigationLink(destination: QiblaCompassView().environmentObject(themeManager)) {
                             FeatureRow(icon: "safari", title: "Qibla Compass", description: "Find prayer direction")
@@ -43,20 +55,9 @@ struct ContentView: View {
                         }
                         .buttonStyle(PlainButtonStyle())
                         
-                        NavigationLink(destination: MosqueEventsView().environmentObject(themeManager)) {
-                            FeatureRow(icon: "calendar", title: "Events", description: "Mosque events & announcements")
-                                .environmentObject(themeManager)
-                        }
-                        .buttonStyle(PlainButtonStyle())
                         
                         NavigationLink(destination: NotificationSettingsView().environmentObject(themeManager)) {
                             FeatureRow(icon: "bell", title: "Notifications", description: "Prayer reminders")
-                                .environmentObject(themeManager)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                        
-                        NavigationLink(destination: DonationView().environmentObject(themeManager)) {
-                            FeatureRow(icon: "heart.fill", title: "Donate", description: "Support your mosque")
                                 .environmentObject(themeManager)
                         }
                         .buttonStyle(PlainButtonStyle())
