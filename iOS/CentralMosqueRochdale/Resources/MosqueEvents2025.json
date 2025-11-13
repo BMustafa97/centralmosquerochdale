@@ -10,7 +10,7 @@
       "recurrence": "weekly",
       "location": "Main Prayer Hall",
       "organizer": "Mufti Zaid",
-      "isImportant": true,
+      "isImportant": false,
       "startDate": "2025-01-03",
       "endDate": "2025-12-26"
     },
