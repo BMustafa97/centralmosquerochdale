@@ -11,9 +11,15 @@
 		C001000000000000000001CC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C001000000000000000001DD /* ContentView.swift */; };
 		C001000000000000000001EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C001000000000000000001FF /* Assets.xcassets */; };
 		C001000000000000000002AA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C001000000000000000002BB /* Preview Assets.xcassets */; };
-		F3EDC6642EB2A90900316F09 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EDC6632EB2A90900316F09 /* ThemeManager.swift */; };
-		F3EDC6662EB2A91F00316F09 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EDC6652EB2A91F00316F09 /* SettingsView.swift */; };
-		F3EDC6682EB429DE00316F09 /* DonationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EDC6672EB429DE00316F09 /* DonationView.swift */; };
+		F3A0A2192EC55A660010F99D /* PrayerTimes2025.json in Resources */ = {isa = PBXBuildFile; fileRef = F3A0A2172EC55A660010F99D /* PrayerTimes2025.json */; };
+		F3A0A2222EC5F0550010F99D /* EventSubscriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A0A21B2EC5F0550010F99D /* EventSubscriptionView.swift */; };
+		F3A0A2232EC5F0550010F99D /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A0A21D2EC5F0550010F99D /* NotificationSettingsView.swift */; };
+		F3A0A2242EC5F0550010F99D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A0A2202EC5F0550010F99D /* SettingsView.swift */; };
+		F3A0A2252EC5F0550010F99D /* PrayerTimesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A0A21E2EC5F0550010F99D /* PrayerTimesView.swift */; };
+		F3A0A2262EC5F0550010F99D /* MosqueEventsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A0A21C2EC5F0550010F99D /* MosqueEventsView.swift */; };
+		F3A0A2272EC5F0550010F99D /* DonationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A0A21A2EC5F0550010F99D /* DonationView.swift */; };
+		F3A0A2282EC5F0550010F99D /* QiblaCompassView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A0A21F2EC5F0550010F99D /* QiblaCompassView.swift */; };
+		F3E183CE2EC5F611002BFDB9 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E183CC2EC5F610002BFDB9 /* ThemeManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,10 +29,17 @@
 		C001000000000000000002BB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C001000000000000000003AA /* CentralMosqueRochdale.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CentralMosqueRochdale.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C001000000000000000003CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F3A0A2172EC55A660010F99D /* PrayerTimes2025.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = PrayerTimes2025.json; sourceTree = "<group>"; };
+		F3A0A21A2EC5F0550010F99D /* DonationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationView.swift; sourceTree = "<group>"; };
+		F3A0A21B2EC5F0550010F99D /* EventSubscriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventSubscriptionView.swift; sourceTree = "<group>"; };
+		F3A0A21C2EC5F0550010F99D /* MosqueEventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosqueEventsView.swift; sourceTree = "<group>"; };
+		F3A0A21D2EC5F0550010F99D /* NotificationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsView.swift; sourceTree = "<group>"; };
+		F3A0A21E2EC5F0550010F99D /* PrayerTimesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimesView.swift; sourceTree = "<group>"; };
+		F3A0A21F2EC5F0550010F99D /* QiblaCompassView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QiblaCompassView.swift; sourceTree = "<group>"; };
+		F3A0A2202EC5F0550010F99D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F3A0A2292EC5F0900010F99D /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		F3DB2E962EB6D4650021DEC8 /* CentralMosqueRochdale.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CentralMosqueRochdale.entitlements; sourceTree = "<group>"; };
-		F3EDC6632EB2A90900316F09 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
-		F3EDC6652EB2A91F00316F09 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		F3EDC6672EB429DE00316F09 /* DonationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationView.swift; sourceTree = "<group>"; };
+		F3E183CC2EC5F610002BFDB9 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,12 +64,12 @@
 		C001000000000000000003FF /* CentralMosqueRochdale */ = {
 			isa = PBXGroup;
 			children = (
+				F3E183CD2EC5F610002BFDB9 /* ViewModels */,
+				F3A0A22A2EC5F0900010F99D /* Models */,
+				F3A0A2212EC5F0550010F99D /* Views */,
+				F3A0A2182EC55A660010F99D /* Resources */,
 				F3DB2E962EB6D4650021DEC8 /* CentralMosqueRochdale.entitlements */,
-				F3EDC6672EB429DE00316F09 /* DonationView.swift */,
 				C001000000000000000001BB /* CentralMosqueRochdaleApp.swift */,
-				C001000000000000000001DD /* ContentView.swift */,
-				F3EDC6632EB2A90900316F09 /* ThemeManager.swift */,
-				F3EDC6652EB2A91F00316F09 /* SettingsView.swift */,
 				C001000000000000000001FF /* Assets.xcassets */,
 				C001000000000000000003CC /* Info.plist */,
 				C001000000000000000004BB /* Preview Content */,
@@ -78,6 +91,45 @@
 				C001000000000000000002BB /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		F3A0A2182EC55A660010F99D /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F3A0A2172EC55A660010F99D /* PrayerTimes2025.json */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		F3A0A2212EC5F0550010F99D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F3A0A21A2EC5F0550010F99D /* DonationView.swift */,
+				F3A0A21B2EC5F0550010F99D /* EventSubscriptionView.swift */,
+				F3A0A21C2EC5F0550010F99D /* MosqueEventsView.swift */,
+				F3A0A21D2EC5F0550010F99D /* NotificationSettingsView.swift */,
+				F3A0A21E2EC5F0550010F99D /* PrayerTimesView.swift */,
+				F3A0A21F2EC5F0550010F99D /* QiblaCompassView.swift */,
+				F3A0A2202EC5F0550010F99D /* SettingsView.swift */,
+				C001000000000000000001DD /* ContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F3A0A22A2EC5F0900010F99D /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F3A0A2292EC5F0900010F99D /* ThemeManager.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F3E183CD2EC5F610002BFDB9 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				F3E183CC2EC5F610002BFDB9 /* ThemeManager.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -140,6 +192,7 @@
 			files = (
 				C001000000000000000002AA /* Preview Assets.xcassets in Resources */,
 				C001000000000000000001EE /* Assets.xcassets in Resources */,
+				F3A0A2192EC55A660010F99D /* PrayerTimes2025.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,10 +204,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				C001000000000000000001CC /* ContentView.swift in Sources */,
-				F3EDC6682EB429DE00316F09 /* DonationView.swift in Sources */,
-				F3EDC6662EB2A91F00316F09 /* SettingsView.swift in Sources */,
+				F3A0A2222EC5F0550010F99D /* EventSubscriptionView.swift in Sources */,
+				F3A0A2232EC5F0550010F99D /* NotificationSettingsView.swift in Sources */,
+				F3A0A2242EC5F0550010F99D /* SettingsView.swift in Sources */,
+				F3A0A2252EC5F0550010F99D /* PrayerTimesView.swift in Sources */,
+				F3A0A2262EC5F0550010F99D /* MosqueEventsView.swift in Sources */,
+				F3A0A2272EC5F0550010F99D /* DonationView.swift in Sources */,
+				F3A0A2282EC5F0550010F99D /* QiblaCompassView.swift in Sources */,
 				C001000000000000000001AA /* CentralMosqueRochdaleApp.swift in Sources */,
-				F3EDC6642EB2A90900316F09 /* ThemeManager.swift in Sources */,
+				F3E183CE2EC5F611002BFDB9 /* ThemeManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,6 +347,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = CentralMosqueRochdale/CentralMosqueRochdale.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -324,6 +383,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = CentralMosqueRochdale/CentralMosqueRochdale.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;

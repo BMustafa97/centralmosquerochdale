@@ -113,7 +113,7 @@ struct QiblaCompassView: View {
         NavigationView {
             VStack(spacing: 30) {
                 if let errorMessage = locationManager.errorMessage {
-                    ErrorView(message: errorMessage) {
+                    QiblaErrorView(message: errorMessage) {
                         locationManager.startLocationUpdates()
                     }
                 } else if locationManager.location == nil {
@@ -535,7 +535,7 @@ struct LoadingView: View {
     }
 }
 
-struct ErrorView: View {
+struct QiblaErrorView: View {
     let message: String
     let onRetry: () -> Void
     
