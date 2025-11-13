@@ -108,31 +108,70 @@ class QiblaLocationManager: NSObject, ObservableObject, CLLocationManagerDelegat
 struct QiblaCompassView: View {
     @StateObject private var locationManager = QiblaLocationManager()
     @State private var compassRotation: Double = 0
+    @EnvironmentObject var themeManager: ThemeManager
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 30) {
-                if let errorMessage = locationManager.errorMessage {
-                    QiblaErrorView(message: errorMessage) {
-                        locationManager.startLocationUpdates()
+        ZStack {
+            themeManager.backgroundColor.ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Header with title and home button
+                HStack {
+                    Button(action: {
+                        dismiss()
+                    }) {
+                        Image(systemName: "house.fill")
+                            .font(.title3)
+                            .foregroundColor(themeManager.primaryColor)
+                            .frame(width: 40, height: 40)
                     }
-                } else if locationManager.location == nil {
-                    LoadingView()
-                } else {
-                    QiblaCompassContent(
-                        locationManager: locationManager,
-                        compassRotation: $compassRotation
-                    )
+                    
+                    Spacer()
+                    
+                    Text("Qibla Compass")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(themeManager.textPrimary)
+                    
+                    Spacer()
+                    
+                    // Placeholder for symmetry
+                    Color.clear
+                        .frame(width: 40, height: 40)
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 12)
+                .background(themeManager.cardBackground)
+                .shadow(color: themeManager.primaryColor.opacity(0.1), radius: 2, x: 0, y: 2)
+                
+                // Scrollable content
+                ScrollView {
+                    VStack(spacing: 20) {
+                        if let errorMessage = locationManager.errorMessage {
+                            QiblaErrorView(message: errorMessage, themeManager: themeManager) {
+                                locationManager.startLocationUpdates()
+                            }
+                        } else if locationManager.location == nil {
+                            LoadingView(themeManager: themeManager)
+                        } else {
+                            QiblaCompassContent(
+                                locationManager: locationManager,
+                                compassRotation: $compassRotation,
+                                themeManager: themeManager
+                            )
+                        }
+                    }
+                    .padding()
                 }
             }
-            .padding()
-            .navigationTitle("Qibla Compass")
-            .onAppear {
-                locationManager.startLocationUpdates()
-            }
-            .onDisappear {
-                locationManager.stopLocationUpdates()
-            }
+        }
+        .navigationBarHidden(true)
+        .onAppear {
+            locationManager.startLocationUpdates()
+        }
+        .onDisappear {
+            locationManager.stopLocationUpdates()
         }
     }
 }
@@ -140,6 +179,7 @@ struct QiblaCompassView: View {
 struct QiblaCompassContent: View {
     @ObservedObject var locationManager: QiblaLocationManager
     @Binding var compassRotation: Double
+    @ObservedObject var themeManager: ThemeManager
     
     // Rotation needed to align compass so that user's heading is at bottom
     // and Qibla direction is at top
@@ -157,34 +197,34 @@ struct QiblaCompassContent: View {
     }
     
     var body: some View {
-        VStack(spacing: 30) {
+        VStack(spacing: 25) {
             // Location Info
-            LocationInfoView(location: locationManager.location)
+            LocationInfoView(location: locationManager.location, themeManager: themeManager)
             
             // Instructions
             VStack(spacing: 8) {
                 Image(systemName: isAlignedWithQibla ? "checkmark.circle.fill" : "arrow.up.circle.fill")
                     .font(.system(size: 40))
-                    .foregroundColor(isAlignedWithQibla ? .green : .blue)
+                    .foregroundColor(isAlignedWithQibla ? themeManager.accentColor : themeManager.primaryColor)
                     .animation(.easeInOut, value: isAlignedWithQibla)
                 
                 Text(isAlignedWithQibla ? "Aligned with Qibla!" : "Rotate to face Qibla")
                     .font(.headline)
-                    .foregroundColor(isAlignedWithQibla ? .green : .primary)
+                    .foregroundColor(isAlignedWithQibla ? themeManager.accentColor : themeManager.textPrimary)
                 
                 Text("The green arrow at the top points to Mecca")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(themeManager.textSecondary)
                     .multilineTextAlignment(.center)
             }
             .padding()
-            .background(isAlignedWithQibla ? Color.green.opacity(0.1) : Color.blue.opacity(0.05))
+            .background(isAlignedWithQibla ? themeManager.accentColor.opacity(0.15) : themeManager.primaryColor.opacity(0.1))
             .cornerRadius(12)
             
             // Compass with fixed Qibla at top
             ZStack {
                 // Compass Background that rotates with device heading
-                CompassBackgroundView()
+                CompassBackgroundView(themeManager: themeManager)
                     .rotationEffect(.degrees(compassRotationAngle))
                     .animation(.easeInOut(duration: 0.3), value: compassRotationAngle)
                 
@@ -195,12 +235,12 @@ struct QiblaCompassContent: View {
                     .animation(.easeInOut(duration: 0.3), value: compassRotationAngle)
                 
                 // Device indicator (always at bottom - user's current direction)
-                DeviceIndicatorView()
+                DeviceIndicatorView(themeManager: themeManager)
                 
                 // Center Kaaba icon
                 Image(systemName: "house.fill")
                     .font(.system(size: 20))
-                    .foregroundColor(.green)
+                    .foregroundColor(themeManager.accentColor)
             }
             .frame(width: 280, height: 280)
             
@@ -209,25 +249,26 @@ struct QiblaCompassContent: View {
                 qiblaDirection: locationManager.calculateQiblaDirection(),
                 currentHeading: locationManager.heading,
                 isAligned: isAlignedWithQibla,
-                distanceToMakkah: locationManager.calculateDistanceToMakkah()
+                distanceToMakkah: locationManager.calculateDistanceToMakkah(),
+                themeManager: themeManager
             )
-            
-            Spacer()
         }
     }
 }
 
 struct CompassBackgroundView: View {
+    @ObservedObject var themeManager: ThemeManager
+    
     var body: some View {
         ZStack {
             // Outer Circle
             Circle()
-                .stroke(Color.primary.opacity(0.3), lineWidth: 2)
+                .stroke(themeManager.primaryColor.opacity(0.5), lineWidth: 2)
                 .frame(width: 280, height: 280)
             
             // Inner Circle
             Circle()
-                .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                .stroke(themeManager.primaryColor.opacity(0.2), lineWidth: 1)
                 .frame(width: 200, height: 200)
             
             // Cardinal Directions
@@ -236,7 +277,7 @@ struct CompassBackgroundView: View {
                     Text(["N", "E", "S", "W"][index])
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundColor(.primary)
+                        .foregroundColor(themeManager.textPrimary)
                     Spacer()
                 }
                 .frame(height: 140)
@@ -246,7 +287,7 @@ struct CompassBackgroundView: View {
             // Degree Markers
             ForEach(0..<36) { index in
                 Rectangle()
-                    .fill(Color.primary.opacity(0.6))
+                    .fill(themeManager.textSecondary.opacity(0.6))
                     .frame(width: 2, height: index % 3 == 0 ? 20 : 10)
                     .offset(y: -130)
                     .rotationEffect(.degrees(Double(index) * 10))
@@ -320,6 +361,8 @@ struct QiblaIndicatorView: View {
 
 // Device indicator showing user's current direction (fixed at bottom)
 struct DeviceIndicatorView: View {
+    @ObservedObject var themeManager: ThemeManager
+    
     var body: some View {
         VStack {
             Spacer()
@@ -328,12 +371,12 @@ struct DeviceIndicatorView: View {
                 // Phone icon
                 Image(systemName: "iphone")
                     .font(.system(size: 24))
-                    .foregroundColor(.blue)
+                    .foregroundColor(themeManager.primaryColor)
                 
                 Text("YOU")
                     .font(.caption2)
                     .fontWeight(.bold)
-                    .foregroundColor(.blue)
+                    .foregroundColor(themeManager.primaryColor)
             }
         }
         .frame(height: 260)
@@ -353,38 +396,42 @@ struct Triangle: Shape {
 
 struct LocationInfoView: View {
     let location: CLLocation?
+    @ObservedObject var themeManager: ThemeManager
     
     var body: some View {
         VStack(spacing: 8) {
             Text("Current Location")
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(themeManager.textSecondary)
             
             if let location = location {
                 HStack(spacing: 20) {
                     VStack(alignment: .leading) {
                         Text("Latitude")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(themeManager.textSecondary)
                         Text(String(format: "%.4f°", location.coordinate.latitude))
                             .font(.body)
                             .fontWeight(.medium)
+                            .foregroundColor(themeManager.textPrimary)
                     }
                     
                     VStack(alignment: .leading) {
                         Text("Longitude")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(themeManager.textSecondary)
                         Text(String(format: "%.4f°", location.coordinate.longitude))
                             .font(.body)
                             .fontWeight(.medium)
+                            .foregroundColor(themeManager.textPrimary)
                     }
                 }
             }
         }
         .padding()
-        .background(Color(UIColor.systemGray6))
+        .background(themeManager.cardBackground)
         .cornerRadius(12)
+        .shadow(color: themeManager.primaryColor.opacity(0.1), radius: 3, x: 0, y: 2)
     }
 }
 
@@ -431,6 +478,7 @@ struct EnhancedDirectionInfoView: View {
     let currentHeading: Double
     let isAligned: Bool
     let distanceToMakkah: Double?
+    @ObservedObject var themeManager: ThemeManager
     
     var degreesToTurn: Double {
         guard let qiblaDir = qiblaDirection else { return 0 }
@@ -470,17 +518,17 @@ struct EnhancedDirectionInfoView: View {
                 if !isAligned {
                     Image(systemName: degreesToTurn > 0 ? "arrow.turn.up.right" : "arrow.turn.up.left")
                         .font(.title2)
-                        .foregroundColor(.blue)
+                        .foregroundColor(themeManager.primaryColor)
                 }
                 
                 Text(turnDirection)
                     .font(.headline)
-                    .foregroundColor(isAligned ? .green : .blue)
+                    .foregroundColor(isAligned ? themeManager.accentColor : themeManager.primaryColor)
                     .fontWeight(.semibold)
             }
             .padding()
             .frame(maxWidth: .infinity)
-            .background(isAligned ? Color.green.opacity(0.15) : Color.blue.opacity(0.1))
+            .background(isAligned ? themeManager.accentColor.opacity(0.15) : themeManager.primaryColor.opacity(0.1))
             .cornerRadius(12)
             
             // Detailed info
@@ -488,48 +536,52 @@ struct EnhancedDirectionInfoView: View {
                 VStack {
                     Text("Qibla")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(themeManager.textSecondary)
                     Text(qiblaDirection != nil ? String(format: "%.0f°", qiblaDirection!) : "N/A")
                         .font(.title3)
                         .fontWeight(.bold)
-                        .foregroundColor(.green)
+                        .foregroundColor(themeManager.accentColor)
                 }
                 
                 VStack {
                     Text("You")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(themeManager.textSecondary)
                     Text(String(format: "%.0f°", currentHeading))
                         .font(.title3)
                         .fontWeight(.bold)
-                        .foregroundColor(.blue)
+                        .foregroundColor(themeManager.primaryColor)
                 }
                 
                 VStack {
                     Text("Distance")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(themeManager.textSecondary)
                     Text(formattedDistance)
                         .font(.title3)
                         .fontWeight(.bold)
-                        .foregroundColor(.orange)
+                        .foregroundColor(themeManager.secondaryColor)
                 }
             }
         }
         .padding()
-        .background(Color(UIColor.systemGray6))
+        .background(themeManager.cardBackground)
         .cornerRadius(12)
+        .shadow(color: themeManager.primaryColor.opacity(0.1), radius: 3, x: 0, y: 2)
     }
 }
 
 struct LoadingView: View {
+    @ObservedObject var themeManager: ThemeManager
+    
     var body: some View {
         VStack(spacing: 20) {
             ProgressView()
                 .scaleEffect(1.5)
+                .tint(themeManager.primaryColor)
             Text("Getting your location...")
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(themeManager.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -537,23 +589,25 @@ struct LoadingView: View {
 
 struct QiblaErrorView: View {
     let message: String
+    @ObservedObject var themeManager: ThemeManager
     let onRetry: () -> Void
     
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "location.slash")
                 .font(.system(size: 50))
-                .foregroundColor(.red)
+                .foregroundColor(themeManager.accentColor)
             
             Text(message)
                 .font(.body)
-                .foregroundColor(.secondary)
+                .foregroundColor(themeManager.textSecondary)
                 .multilineTextAlignment(.center)
             
             Button("Retry") {
                 onRetry()
             }
             .buttonStyle(.borderedProminent)
+            .tint(themeManager.primaryColor)
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -564,5 +618,6 @@ struct QiblaErrorView: View {
 struct QiblaCompassView_Previews: PreviewProvider {
     static var previews: some View {
         QiblaCompassView()
+            .environmentObject(ThemeManager())
     }
 }
