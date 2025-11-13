@@ -334,76 +334,9 @@ struct ReminderTimeSection: View {
     }
 }
 
-// MARK: - Integration with Main Views
-extension PrayerTimesView {
-    var settingsButton: some View {
-        NavigationLink(destination: NotificationSettingsView()) {
-            Image(systemName: "bell")
-                .font(.title3)
-        }
-    }
-}
-
-// MARK: - Updated Prayer Times View with Settings Button
-struct EnhancedPrayerTimesView: View {
-    @StateObject private var service = PrayerTimesService()
-    @StateObject private var notificationManager = PrayerNotificationManager()
-    
-    var body: some View {
-        NavigationView {
-            VStack {
-                if service.isLoading {
-                    ProgressView("Loading prayer times...")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if let errorMessage = service.errorMessage {
-                    VStack {
-                        Image(systemName: "exclamationmark.triangle")
-                            .font(.largeTitle)
-                            .foregroundColor(.orange)
-                        Text(errorMessage)
-                            .foregroundColor(.secondary)
-                        Button("Retry") {
-                            service.fetchPrayerTimes()
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    PrayerTimesTable(prayers: service.prayers)
-                }
-            }
-            .padding()
-            .navigationTitle("Prayer Times")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink(destination: NotificationSettingsView()) {
-                        Image(systemName: "bell")
-                            .font(.title3)
-                    }
-                }
-            }
-            .onAppear {
-                service.fetchPrayerTimes()
-                // Schedule notifications when prayer times are loaded
-                notificationManager.scheduleAllNotifications()
-            }
-            .refreshable {
-                service.fetchPrayerTimes()
-                notificationManager.scheduleAllNotifications()
-            }
-        }
-    }
-}
-
 // MARK: - Preview
 struct NotificationSettingsView_Previews: PreviewProvider {
     static var previews: some View {
         NotificationSettingsView()
-    }
-}
-
-struct EnhancedPrayerTimesView_Previews: PreviewProvider {
-    static var previews: some View {
-        EnhancedPrayerTimesView()
     }
 }

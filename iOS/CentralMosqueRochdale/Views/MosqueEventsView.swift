@@ -78,10 +78,10 @@ enum EventCategory: String, CaseIterable, Codable {
 
 struct EventSubscription: Codable {
     let userId: String
-    let subscribedCategories: Set<EventCategory>
-    let notifyBeforeMinutes: Int
-    let isEnabled: Bool
-    let lastUpdated: Date
+    var subscribedCategories: Set<EventCategory>
+    var notifyBeforeMinutes: Int
+    var isEnabled: Bool
+    var lastUpdated: Date
 }
 
 struct CreateEventRequest: Codable {
@@ -324,7 +324,7 @@ struct MosqueEventsView: View {
                     ProgressView("Loading events...")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if let errorMessage = eventService.errorMessage {
-                    ErrorView(message: errorMessage) {
+                    MosqueEventsErrorView(message: errorMessage) {
                         Task { await eventService.fetchEvents() }
                     }
                 } else {
@@ -565,7 +565,7 @@ struct EmptyEventsView: View {
     }
 }
 
-struct ErrorView: View {
+struct MosqueEventsErrorView: View {
     let message: String
     let onRetry: () -> Void
     
