@@ -183,64 +183,110 @@ class PrayerNotificationManager: ObservableObject {
 // MARK: - Notification Settings View
 struct NotificationSettingsView: View {
     @StateObject private var notificationManager = PrayerNotificationManager()
+    @EnvironmentObject var themeManager: ThemeManager
+    @Environment(\.dismiss) private var dismiss
     @State private var showingPermissionAlert = false
     
     var body: some View {
-        NavigationView {
-            Form {
-                Section(header: Text("Prayer Notifications")) {
-                    if notificationManager.notificationPermissionStatus != .authorized {
-                        NotificationPermissionView(
-                            status: notificationManager.notificationPermissionStatus,
-                            onRequestPermission: {
-                                notificationManager.requestNotificationPermission()
-                            }
-                        )
-                    } else {
-                        NotificationToggleSection(notificationManager: notificationManager)
-                        ReminderTimeSection(notificationManager: notificationManager)
+        ZStack {
+            themeManager.backgroundColor
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Custom Header
+                HStack {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "house.fill")
+                            .font(.title3)
+                            .foregroundColor(themeManager.primaryColor)
                     }
+                    
+                    Spacer()
+                    
+                    Text("Notification Settings")
+                        .font(.headline)
+                        .foregroundColor(themeManager.textPrimary)
+                    
+                    Spacer()
+                    
+                    // Placeholder for symmetry
+                    Image(systemName: "house.fill")
+                        .font(.title3)
+                        .foregroundColor(.clear)
                 }
+                .padding()
+                .background(themeManager.cardBackground)
+                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
                 
-                if let errorMessage = notificationManager.errorMessage {
-                    Section(header: Text("Error")) {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .font(.caption)
+                Form {
+                    Section(header: Text("Prayer Notifications")
+                        .foregroundColor(themeManager.textSecondary)) {
+                        if notificationManager.notificationPermissionStatus != .authorized {
+                            NotificationPermissionView(
+                                status: notificationManager.notificationPermissionStatus,
+                                themeManager: themeManager,
+                                onRequestPermission: {
+                                    notificationManager.requestNotificationPermission()
+                                }
+                            )
+                        } else {
+                            NotificationToggleSection(
+                                notificationManager: notificationManager,
+                                themeManager: themeManager
+                            )
+                            ReminderTimeSection(
+                                notificationManager: notificationManager,
+                                themeManager: themeManager
+                            )
+                        }
+                    }
+                    
+                    if let errorMessage = notificationManager.errorMessage {
+                        Section(header: Text("Error")
+                            .foregroundColor(themeManager.textSecondary)) {
+                            Text(errorMessage)
+                                .foregroundColor(themeManager.accentColor)
+                                .font(.caption)
+                        }
+                    }
+                    
+                    Section(header: Text("About")
+                        .foregroundColor(themeManager.textSecondary)) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Prayer notifications will remind you before Jamaa'ah time at Central Mosque Rochdale.")
+                                .foregroundColor(themeManager.textSecondary)
+                            Text("Make sure to keep notifications enabled in your device settings.")
+                                .foregroundColor(themeManager.textSecondary)
+                        }
+                        .font(.caption)
                     }
                 }
-                
-                Section(header: Text("About")) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Prayer notifications will remind you before Jamaa'ah time at Central Mosque Rochdale.")
-                        Text("Make sure to keep notifications enabled in your device settings.")
-                    }
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                }
+                .scrollContentBackground(.hidden)
+                .background(themeManager.backgroundColor)
             }
-            .navigationTitle("Notification Settings")
         }
     }
 }
 
 struct NotificationPermissionView: View {
     let status: UNAuthorizationStatus
+    @ObservedObject var themeManager: ThemeManager
     let onRequestPermission: () -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "bell.slash")
-                    .foregroundColor(.orange)
+                    .foregroundColor(themeManager.secondaryColor)
                     .font(.title2)
                 
                 VStack(alignment: .leading) {
                     Text("Notifications Disabled")
                         .font(.headline)
+                        .foregroundColor(themeManager.textPrimary)
                     Text(statusMessage)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(themeManager.textSecondary)
                 }
             }
             
@@ -249,9 +295,12 @@ struct NotificationPermissionView: View {
                     Image(systemName: "bell")
                     Text(buttonText)
                 }
+                .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
+                .padding()
+                .background(themeManager.primaryColor)
+                .cornerRadius(8)
             }
-            .buttonStyle(.borderedProminent)
         }
         .padding(.vertical, 8)
     }
@@ -279,6 +328,7 @@ struct NotificationPermissionView: View {
 
 struct NotificationToggleSection: View {
     @ObservedObject var notificationManager: PrayerNotificationManager
+    @ObservedObject var themeManager: ThemeManager
     
     private let prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"]
     
@@ -289,9 +339,10 @@ struct NotificationToggleSection: View {
                     Text(prayer)
                         .font(.body)
                         .fontWeight(.medium)
+                        .foregroundColor(themeManager.textPrimary)
                     Text("Jamaa'ah reminder")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(themeManager.textSecondary)
                 }
                 
                 Spacer()
@@ -300,6 +351,7 @@ struct NotificationToggleSection: View {
                     get: { notificationManager.settings.isEnabledFor(prayer: prayer) },
                     set: { _ in notificationManager.togglePrayerNotification(for: prayer) }
                 ))
+                .tint(themeManager.primaryColor)
             }
         }
     }
@@ -307,6 +359,7 @@ struct NotificationToggleSection: View {
 
 struct ReminderTimeSection: View {
     @ObservedObject var notificationManager: PrayerNotificationManager
+    @ObservedObject var themeManager: ThemeManager
     
     private let reminderOptions = [5, 10, 15]
     
@@ -314,10 +367,11 @@ struct ReminderTimeSection: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Reminder Time")
                 .font(.headline)
+                .foregroundColor(themeManager.textPrimary)
             
             Text("How many minutes before Jamaa'ah would you like to be reminded?")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(themeManager.textSecondary)
             
             Picker("Reminder Time", selection: Binding(
                 get: { notificationManager.settings.reminderMinutes },
@@ -329,6 +383,7 @@ struct ReminderTimeSection: View {
                 }
             }
             .pickerStyle(SegmentedPickerStyle())
+            .background(themeManager.cardBackground)
         }
         .padding(.vertical, 8)
     }
