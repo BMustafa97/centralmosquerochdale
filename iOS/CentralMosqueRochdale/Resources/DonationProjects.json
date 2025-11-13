@@ -1,0 +1,59 @@
+{
+  "projects": [
+    {
+      "id": "general-fund",
+      "title": "General Fund",
+      "description": "Support daily operations and maintenance",
+      "icon": "building.2",
+      "goal": 10000,
+      "raised": 1000,
+      "color": "green",
+      "isActive": true,
+      "priority": 1
+    },
+    {
+      "id": "renovation-project",
+      "title": "Renovation Project",
+      "description": "Mosque building improvements",
+      "icon": "hammer",
+      "goal": 50000,
+      "raised": 5000,
+      "color": "blue",
+      "isActive": true,
+      "priority": 2
+    },
+    {
+      "id": "community-programs",
+      "title": "Community Programs",
+      "description": "Education and youth activities",
+      "icon": "person.3",
+      "goal": 3000,
+      "raised": 300,
+      "color": "orange",
+      "isActive": true,
+      "priority": 3
+    },
+    {
+      "id": "ramadan-food-bank",
+      "title": "Ramadan Food Bank",
+      "description": "Provide meals for those in need",
+      "icon": "heart",
+      "goal": 2000,
+      "raised": 200,
+      "color": "red",
+      "isActive": true,
+      "priority": 4
+    },
+    {
+      "id": "islamic-school",
+      "title": "Islamic School",
+      "description": "Support Quran and Arabic classes",
+      "icon": "book",
+      "goal": 10000,
+      "raised": 1000,
+      "color": "purple",
+      "isActive": true,
+      "priority": 5
+    }
+  ]
+}

@@ -2,14 +2,16 @@ import SwiftUI
 import PassKit
 
 // Donation Models
-struct DonationProject: Identifiable {
-    let id = UUID()
+struct DonationProject: Identifiable, Codable {
+    let id: String
     let title: String
     let description: String
     let icon: String
     let goal: Double
     let raised: Double
-    let color: Color
+    let color: String
+    let isActive: Bool
+    let priority: Int
     
     var progress: Double {
         min(raised / goal, 1.0)
@@ -18,6 +20,23 @@ struct DonationProject: Identifiable {
     var progressText: String {
         String(format: "£%.0f / £%.0f", raised, goal)
     }
+    
+    var colorValue: Color {
+        switch color.lowercased() {
+        case "green": return .green
+        case "blue": return .blue
+        case "orange": return .orange
+        case "red": return .red
+        case "purple": return .purple
+        case "yellow": return .yellow
+        case "pink": return .pink
+        default: return .blue
+        }
+    }
+}
+
+struct ProjectsData: Codable {
+    let projects: [DonationProject]
 }
 
 // Payment Coordinator for Apple Pay
@@ -53,51 +72,31 @@ class DonationViewModel: ObservableObject {
     @Published var showingPaymentSheet = false
     @Published var showingSuccessMessage = false
     @Published var paymentMessage = ""
+    @Published var projects: [DonationProject] = []
+    @Published var errorMessage: String?
     
     let quickAmounts = [5.0, 10.0, 20.0, 50.0, 100.0, 200.0]
     
-    let projects = [
-        DonationProject(
-            title: "General Fund",
-            description: "Support daily operations and maintenance",
-            icon: "building.2",
-            goal: 10000,
-            raised: 6500,
-            color: Color.green
-        ),
-        DonationProject(
-            title: "Renovation Project",
-            description: "Mosque building improvements",
-            icon: "hammer",
-            goal: 50000,
-            raised: 32000,
-            color: Color.blue
-        ),
-        DonationProject(
-            title: "Community Programs",
-            description: "Education and youth activities",
-            icon: "person.3",
-            goal: 15000,
-            raised: 8500,
-            color: Color.orange
-        ),
-        DonationProject(
-            title: "Ramadan Food Bank",
-            description: "Provide meals for those in need",
-            icon: "heart",
-            goal: 8000,
-            raised: 5200,
-            color: Color.red
-        ),
-        DonationProject(
-            title: "Islamic School",
-            description: "Support Quran and Arabic classes",
-            icon: "book",
-            goal: 12000,
-            raised: 7800,
-            color: Color.purple
-        )
-    ]
+    init() {
+        loadProjects()
+    }
+    
+    func loadProjects() {
+        guard let url = Bundle.main.url(forResource: "DonationProjects", withExtension: "json") else {
+            errorMessage = "Could not find DonationProjects.json"
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let projectsData = try decoder.decode(ProjectsData.self, from: data)
+            self.projects = projectsData.projects.filter { $0.isActive }.sorted { $0.priority < $1.priority }
+            self.errorMessage = nil
+        } catch {
+            errorMessage = "Failed to load projects: \(error.localizedDescription)"
+        }
+    }
     
     var donationAmount: Double {
         if let selected = selectedAmount {
@@ -283,14 +282,14 @@ struct DonationView: View {
                         VStack(spacing: 8) {
                             HStack {
                                 Image(systemName: project.icon)
-                                    .foregroundColor(project.color)
+                                    .foregroundColor(project.colorValue)
                                 Text("Donating to: \(project.title)")
                                     .font(.subheadline)
                                     .foregroundColor(themeManager.textPrimary)
                                 Spacer()
                             }
                             .padding()
-                            .background(project.color.opacity(0.1))
+                            .background(project.colorValue.opacity(0.1))
                             .cornerRadius(8)
                         }
                         .padding(.horizontal)
@@ -411,11 +410,11 @@ struct ProjectCard: View {
             HStack {
                 Image(systemName: project.icon)
                     .font(.title2)
-                    .foregroundColor(project.color)
+                    .foregroundColor(project.colorValue)
                 Spacer()
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(project.color)
+                        .foregroundColor(project.colorValue)
                 }
             }
             
@@ -439,7 +438,7 @@ struct ProjectCard: View {
                             .cornerRadius(3)
                         
                         Rectangle()
-                            .fill(project.color)
+                            .fill(project.colorValue)
                             .frame(width: geometry.size.width * project.progress, height: 6)
                             .cornerRadius(3)
                     }
@@ -453,11 +452,11 @@ struct ProjectCard: View {
         }
         .padding()
         .frame(width: 200)
-        .background(isSelected ? project.color.opacity(0.1) : themeManager.cardBackground)
+        .background(isSelected ? project.colorValue.opacity(0.1) : themeManager.cardBackground)
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(isSelected ? project.color : Color.clear, lineWidth: 2)
+                .stroke(isSelected ? project.colorValue : Color.clear, lineWidth: 2)
         )
         .shadow(color: themeManager.primaryColor.opacity(0.1), radius: 3, x: 0, y: 2)
     }
