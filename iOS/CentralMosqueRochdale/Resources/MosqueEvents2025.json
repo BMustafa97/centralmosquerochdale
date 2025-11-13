@@ -1,0 +1,46 @@
+{
+  "events": [
+    {
+      "id": "tafseer-yusuf",
+      "title": "Tafseer of Surah Yusuf",
+      "description": "Join Mufti Zaid for an in-depth exploration of Surah Yusuf, uncovering its timeless lessons, spiritual insights, and practical guidance for our daily lives.",
+      "category": "lecture",
+      "dayOfWeek": "Friday",
+      "time": "After Esha",
+      "recurrence": "weekly",
+      "location": "Main Prayer Hall",
+      "organizer": "Mufti Zaid",
+      "isImportant": false,
+      "startDate": "2025-01-03",
+      "endDate": "2025-12-26"
+    },
+    {
+      "id": "hadith-circle",
+      "title": "Weekly Hadith Circle",
+      "description": "A weekly gathering to study authentic Hadith with Maulana Abdul Mobeen. Learn the sayings and traditions of Prophet Muhammad (peace be upon him) and their application in modern life.",
+      "category": "education",
+      "dayOfWeek": "Tuesday",
+      "time": "After Maghrib",
+      "recurrence": "weekly",
+      "location": "Community Hall",
+      "organizer": "Maulana Abdul Mobeen",
+      "isImportant": false,
+      "startDate": "2025-01-07",
+      "endDate": "2025-12-30"
+    },
+    {
+      "id": "iqraa-series",
+      "title": "Iqraa Series",
+      "description": "Bi-weekly Islamic educational series with Al Yusra focusing on Quranic understanding, Islamic knowledge, and spiritual development.",
+      "category": "religious",
+      "dayOfWeek": "Saturday",
+      "time": "After Esha",
+      "recurrence": "biweekly",
+      "location": "Main Prayer Hall",
+      "organizer": "Al Yusra",
+      "isImportant": false,
+      "startDate": "2025-01-04",
+      "endDate": "2025-12-27"
+    }
+  ]
+}

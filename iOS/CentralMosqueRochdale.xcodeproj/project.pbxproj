@@ -20,6 +20,7 @@
 		F3A0A2272EC5F0550010F99D /* DonationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A0A21A2EC5F0550010F99D /* DonationView.swift */; };
 		F3A0A2282EC5F0550010F99D /* QiblaCompassView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A0A21F2EC5F0550010F99D /* QiblaCompassView.swift */; };
 		F3E183CE2EC5F611002BFDB9 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E183CC2EC5F610002BFDB9 /* ThemeManager.swift */; };
+		F3E183D02EC6079D002BFDB9 /* MosqueEvents2025.json in Resources */ = {isa = PBXBuildFile; fileRef = F3E183CF2EC6079D002BFDB9 /* MosqueEvents2025.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		F3A0A2292EC5F0900010F99D /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		F3DB2E962EB6D4650021DEC8 /* CentralMosqueRochdale.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CentralMosqueRochdale.entitlements; sourceTree = "<group>"; };
 		F3E183CC2EC5F610002BFDB9 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
+		F3E183CF2EC6079D002BFDB9 /* MosqueEvents2025.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MosqueEvents2025.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 		F3A0A2182EC55A660010F99D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F3E183CF2EC6079D002BFDB9 /* MosqueEvents2025.json */,
 				F3A0A2172EC55A660010F99D /* PrayerTimes2025.json */,
 			);
 			path = Resources;
@@ -191,6 +194,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C001000000000000000002AA /* Preview Assets.xcassets in Resources */,
+				F3E183D02EC6079D002BFDB9 /* MosqueEvents2025.json in Resources */,
 				C001000000000000000001EE /* Assets.xcassets in Resources */,
 				F3A0A2192EC55A660010F99D /* PrayerTimes2025.json in Resources */,
 			);
