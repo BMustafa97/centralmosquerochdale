@@ -65,6 +65,8 @@
 		<string>location</string>
 		<string>remote-notification</string>
 		<string>nearby-interaction</string>
+		<string>fetch</string>
+		<string>processing</string>
 	</array>
 	<key>UILaunchScreen</key>
 	<dict>
