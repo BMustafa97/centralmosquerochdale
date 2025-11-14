@@ -54,6 +54,12 @@ struct ContentView: View {
                                 .environmentObject(themeManager)
                         }
                         .buttonStyle(PlainButtonStyle())
+
+                        NavigationLink(destination: ExternalLinksView().environmentObject(themeManager)) {
+                            FeatureRow(icon: "link.circle", title: "Connect", description: "YouTube, WhatsApp & Live Stream")
+                                .environmentObject(themeManager)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                         
                         
                         NavigationLink(destination: NotificationSettingsView().environmentObject(themeManager)) {
