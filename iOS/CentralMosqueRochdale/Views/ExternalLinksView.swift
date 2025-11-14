@@ -37,7 +37,7 @@ struct ExternalLinksView: View {
                             icon: "play.tv.fill",
                             title: "MyMasjid Portal",
                             description: "Watch live streams and access mosque services",
-                            url: "https://mymasjid.org.uk/central-mosque-rochdale",
+                            url: "https://mymasjid.uk/live/cmrochdale",
                             accentColor: themeManager.accentColor
                         )
                         
@@ -46,7 +46,7 @@ struct ExternalLinksView: View {
                             icon: "play.rectangle.fill",
                             title: "YouTube Channel",
                             description: "Watch lectures, events, and educational content",
-                            url: "https://youtube.com/@centralmosquerochdale",
+                            url: "https://youtube.com/centralmosquerochdale",
                             accentColor: Color.red
                         )
                         
@@ -55,7 +55,7 @@ struct ExternalLinksView: View {
                             icon: "bubble.left.and.bubble.right.fill",
                             title: "WhatsApp Community",
                             description: "Join our community for updates and discussions",
-                            url: "https://chat.whatsapp.com/centralmosquerochdale",
+                            url: "https://whatsapp.com/channel/0029VaGVe0k7j6g4FycciF2N",
                             accentColor: Color.green
                         )
                         
@@ -64,7 +64,7 @@ struct ExternalLinksView: View {
                             icon: "globe",
                             title: "Website",
                             description: "Visit our official website",
-                            url: "https://centralmosquerochdale.org",
+                            url: "https://centralmosquerochdale.com",
                             accentColor: themeManager.primaryColor
                         )
                         
@@ -167,7 +167,7 @@ struct SocialMediaSection: View {
                 SocialMediaButton(
                     icon: "f.circle.fill",
                     name: "Facebook",
-                    url: "https://facebook.com/centralmosquerochdale",
+                    url: "https://m.facebook.com/centralmosquerochdale/",
                     color: Color.blue
                 )
                 
@@ -183,7 +183,7 @@ struct SocialMediaSection: View {
                 SocialMediaButton(
                     icon: "xmark.circle.fill",
                     name: "Twitter",
-                    url: "https://twitter.com/centralmosquerc",
+                    url: "https://x.com/CMRochdale",
                     color: Color.black
                 )
             }
