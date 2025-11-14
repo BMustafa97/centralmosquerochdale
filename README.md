@@ -35,9 +35,11 @@ A comprehensive iOS mobile app for Central Mosque Rochdale, built with SwiftUI. 
 - **Jummah Times**: Special display for Friday congregation times
 - **Table Format**: Shows prayer name, Adhan time, and Jamaa'ah (congregation) time
 - **Date Navigation**: Browse prayer times for tomorrow (up to 5 days ahead) and yesterday
-- **JSON Data Source**: Reads from local `PrayerTimes2025.json` file
+- **AWS S3 Integration**: Dynamically loads from S3 with local caching for offline access
+- **Smart Caching**: Background updates ensure times are always current
+- **Multi-Layer Fallback**: S3 → Cache → Bundled JSON for maximum reliability
 - **Themed Design**: Fully integrated with Central Mosque Rochdale brand colors (gold, purple, rose)
-- **Offline First**: Works without internet connection
+- **Offline First**: Works without internet connection using cached data
 
 ### 🧭 Qibla Compass
 - **Accurate Direction**: Real-time compass pointing toward Mecca (21.4225°N, 39.8262°E)

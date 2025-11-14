@@ -23,30 +23,32 @@ class PrayerTimesManager {
     // MARK: - Public Methods
     
     /// Loads prayer times data with the following priority:
-    /// 1. Try cached file from Documents directory
-    /// 2. Try downloading from S3 (and cache it)
+    /// 1. Try downloading from S3 (and cache it) - ensures fresh data
+    /// 2. If S3 fails, try cached file from Documents directory
     /// 3. Fallback to bundled JSON file
     func loadPrayerTimes(completion: @escaping (Result<YearlyPrayerTimes, Error>) -> Void) {
-        // First, try to load from cache
-        if let cachedData = loadFromCache() {
-            completion(.success(cachedData))
-            
-            // Silently update cache in background
-            downloadFromS3InBackground()
-            return
-        }
-        
-        // If no cache, download from S3
+        // First, try to download fresh data from S3
         downloadFromS3 { [weak self] result in
             switch result {
             case .success(let data):
+                // Successfully downloaded from S3
                 completion(.success(data))
+                
             case .failure(let error):
                 print("Failed to download from S3: \(error.localizedDescription)")
-                // Fallback to bundled JSON
-                if let bundledData = self?.loadFromBundle() {
+                
+                // Fallback to cached data
+                if let cachedData = self?.loadFromCache() {
+                    print("📱 Using cached prayer times as fallback")
+                    completion(.success(cachedData))
+                }
+                // If no cache, use bundled JSON
+                else if let bundledData = self?.loadFromBundle() {
+                    print("📦 Using bundled prayer times as fallback")
                     completion(.success(bundledData))
-                } else {
+                }
+                // All sources failed
+                else {
                     completion(.failure(PrayerTimesError.noDataAvailable))
                 }
             }
@@ -131,32 +133,6 @@ class PrayerTimesManager {
                 completion(.success(prayerTimes))
             } catch {
                 completion(.failure(error))
-            }
-        }
-        
-        task.resume()
-    }
-    
-    /// Download from S3 in background (for cache updates)
-    private func downloadFromS3InBackground() {
-        guard let url = URL(string: s3URL) else { return }
-        
-        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-            guard let data = data,
-                  let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode),
-                  error == nil else {
-                print("⚠️ Background S3 update failed")
-                return
-            }
-            
-            // Validate JSON before saving
-            do {
-                _ = try JSONDecoder().decode(YearlyPrayerTimes.self, from: data)
-                self?.saveToCache(data)
-                print("✅ Background cache update successful")
-            } catch {
-                print("⚠️ Background S3 data validation failed: \(error.localizedDescription)")
             }
         }
         
