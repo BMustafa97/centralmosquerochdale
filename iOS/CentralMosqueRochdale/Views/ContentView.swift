@@ -59,8 +59,7 @@ struct ContentView: View {
                             FeatureRow(icon: "link.circle", title: "Connect", description: "YouTube, WhatsApp & Live Stream")
                                 .environmentObject(themeManager)
                         }
-                        .buttonStyle(PlainButtonStyle())
-                        
+                        .buttonStyle(PlainButtonStyle())    
                         
                         NavigationLink(destination: NotificationSettingsView().environmentObject(themeManager)) {
                             FeatureRow(icon: "bell", title: "Notifications", description: "Prayer reminders")

@@ -3,13 +3,13 @@
     {
       "id": "tafseer-yusuf",
       "title": "Tafseer of Surah Yusuf",
-      "description": "Join Mufti Zaid for an in-depth exploration of Surah Yusuf, uncovering its timeless lessons, spiritual insights, and practical guidance for our daily lives.",
+      "description": "Join our Imam for an in-depth exploration of Surah Yusuf, uncovering its timeless lessons, spiritual insights, and practical guidance for our daily lives.",
       "category": "lecture",
       "dayOfWeek": "Friday",
       "time": "After Esha",
       "recurrence": "weekly",
       "location": "Main Prayer Hall",
-      "organizer": "Mufti Zaid",
+      "organizer": "Imam",
       "isImportant": false,
       "startDate": "2025-01-03",
       "endDate": "2025-12-26"
