@@ -99,31 +99,32 @@ class PrayerTimesService: ObservableObject {
     }
     
     private func loadPrayerTimesFromJSON(for dateString: String) {
-        guard let url = Bundle.main.url(forResource: "PrayerTimes2025", withExtension: "json") else {
-            self.errorMessage = "Prayer times file not found"
-            self.isLoading = false
-            return
-        }
-        
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            yearlyData = try decoder.decode(YearlyPrayerTimes.self, from: data)
-            
-            // Find today's prayer times
-            if let todaysPrayers = yearlyData?.prayerTimes.first(where: { $0.date == dateString }) {
-                self.prayers = convertToPrayerArray(todaysPrayers)
-                self.jummahTime = todaysPrayers.jummah ?? "13:00"
-                self.isLoading = false
-            } else {
-                // If today's date not found, use mock data or show error
-                self.errorMessage = "Prayer times for \(dateString) not found in the database"
-                loadMockData() // Fallback to mock data
+        // Use PrayerTimesManager to load from S3, cache, or bundle
+        PrayerTimesManager.shared.loadPrayerTimes { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                
+                switch result {
+                case .success(let yearlyData):
+                    self.yearlyData = yearlyData
+                    
+                    // Find the prayer times for the requested date
+                    if let dayPrayers = yearlyData.prayerTimes.first(where: { $0.date == dateString }) {
+                        self.prayers = self.convertToPrayerArray(dayPrayers)
+                        self.jummahTime = dayPrayers.jummah ?? "13:00"
+                        self.isLoading = false
+                    } else {
+                        // If requested date not found, use mock data or show error
+                        self.errorMessage = "Prayer times for \(dateString) not found in the database"
+                        self.loadMockData()
+                    }
+                    
+                case .failure(let error):
+                    self.errorMessage = "Error loading prayer times: \(error.localizedDescription)"
+                    self.isLoading = false
+                    self.loadMockData() // Fallback to mock data
+                }
             }
-        } catch {
-            self.errorMessage = "Error loading prayer times: \(error.localizedDescription)"
-            self.isLoading = false
-            loadMockData() // Fallback to mock data
         }
     }
     
