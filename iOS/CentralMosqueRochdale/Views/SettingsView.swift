@@ -8,6 +8,27 @@ struct SettingsView: View {
             themeManager.backgroundColor.ignoresSafeArea()
             
             List {
+                Section(header: Text("Notifications")) {
+                    NavigationLink(destination: NotificationSettingsView().environmentObject(themeManager)) {
+                        HStack {
+                            Image(systemName: "bell.fill")
+                                .foregroundColor(themeManager.primaryColor)
+                                .font(.title2)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Prayer Reminders")
+                                    .font(.headline)
+                                    .foregroundColor(themeManager.textPrimary)
+                                Text("Manage notification preferences")
+                                    .font(.caption)
+                                    .foregroundColor(themeManager.textSecondary)
+                            }
+                        }
+                        .padding(.vertical, 8)
+                    }
+                    .listRowBackground(themeManager.cardBackground)
+                }
+                
                 Section(header: Text("Appearance")) {
                     HStack {
                         Image(systemName: themeManager.isDarkMode ? "moon.fill" : "sun.max.fill")
