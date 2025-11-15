@@ -34,8 +34,8 @@
       "priority": 3
     },
     {
-      "id": "ramadan-food-bank",
-      "title": "Ramadan Food Bank",
+      "id": "food-bank",
+      "title": "Food Bank",
       "description": "Provide meals for those in need",
       "icon": "heart",
       "goal": 2000,

@@ -74,6 +74,7 @@ class DonationViewModel: ObservableObject {
     @Published var paymentMessage = ""
     @Published var projects: [DonationProject] = []
     @Published var errorMessage: String?
+    @Published var isRecurring: Bool = false
     
     let quickAmounts = [5.0, 10.0, 20.0, 50.0, 100.0, 200.0]
     
@@ -126,8 +127,11 @@ class DonationViewModel: ObservableObject {
         request.currencyCode = "GBP"
         
         let projectName = project?.title ?? "General Donation"
+        let donationType = isRecurring ? "Monthly Recurring" : "One-Time"
+        let displayLabel = "\(donationType) - \(projectName)"
+        
         request.paymentSummaryItems = [
-            PKPaymentSummaryItem(label: projectName, amount: NSDecimalNumber(value: donationAmount)),
+            PKPaymentSummaryItem(label: displayLabel, amount: NSDecimalNumber(value: donationAmount)),
             PKPaymentSummaryItem(label: "Central Mosque Rochdale", amount: NSDecimalNumber(value: donationAmount))
         ]
         
@@ -136,7 +140,8 @@ class DonationViewModel: ObservableObject {
             coordinator.amount = Decimal(donationAmount)
             coordinator.projectTitle = projectName
             coordinator.onPaymentSuccess = {
-                completion(true, "Thank you for your generous donation of £\(String(format: "%.2f", self.donationAmount))!")
+                let recurringText = self.isRecurring ? " This will be charged monthly." : ""
+                completion(true, "Thank you for your generous donation of £\(String(format: "%.2f", self.donationAmount))!\(recurringText)")
             }
             coordinator.onPaymentFailure = { error in
                 completion(false, "Payment failed: \(error.localizedDescription)")
@@ -157,6 +162,7 @@ class DonationViewModel: ObservableObject {
         selectedAmount = nil
         customAmount = ""
         selectedProject = nil
+        isRecurring = false
     }
 }
 
@@ -247,6 +253,40 @@ struct DonationView: View {
                         .padding(.horizontal)
                     }
                     
+                    // Recurring Donation Toggle
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack(spacing: 12) {
+                            Image(systemName: viewModel.isRecurring ? "arrow.triangle.2.circlepath.circle.fill" : "arrow.triangle.2.circlepath.circle")
+                                .font(.title2)
+                                .foregroundColor(viewModel.isRecurring ? themeManager.accentColor : themeManager.textSecondary)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Monthly Recurring Donation")
+                                    .font(.headline)
+                                    .foregroundColor(themeManager.textPrimary)
+                                
+                                Text(viewModel.isRecurring ? "This donation will repeat every month" : "Make this a monthly donation")
+                                    .font(.caption)
+                                    .foregroundColor(themeManager.textSecondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Toggle("", isOn: $viewModel.isRecurring)
+                                .labelsHidden()
+                                .tint(themeManager.accentColor)
+                        }
+                        .padding()
+                        .background(viewModel.isRecurring ? themeManager.accentColor.opacity(0.1) : themeManager.cardBackground)
+                        .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(viewModel.isRecurring ? themeManager.accentColor : themeManager.textSecondary.opacity(0.2), lineWidth: 1.5)
+                        )
+                        .animation(.easeInOut(duration: 0.3), value: viewModel.isRecurring)
+                    }
+                    .padding(.horizontal)
+                    
                     // Custom Amount
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Or Enter Custom Amount")
@@ -298,6 +338,37 @@ struct DonationView: View {
                     
                     // Payment Buttons
                     VStack(spacing: 12) {
+                        // Show total/recurring info if amount selected
+                        if viewModel.donationAmount > 0 {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(viewModel.isRecurring ? "Monthly Amount" : "One-Time Donation")
+                                        .font(.caption)
+                                        .foregroundColor(themeManager.textSecondary)
+                                    Text("£\(String(format: "%.2f", viewModel.donationAmount))")
+                                        .font(.title2)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(themeManager.accentColor)
+                                }
+                                Spacer()
+                                if viewModel.isRecurring {
+                                    VStack(alignment: .trailing, spacing: 4) {
+                                        Text("Annual Total")
+                                            .font(.caption)
+                                            .foregroundColor(themeManager.textSecondary)
+                                        Text("£\(String(format: "%.2f", viewModel.donationAmount * 12))")
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                            .foregroundColor(themeManager.textPrimary)
+                                    }
+                                }
+                            }
+                            .padding()
+                            .background(themeManager.accentColor.opacity(0.08))
+                            .cornerRadius(12)
+                            .padding(.horizontal)
+                        }
+                        
                         // Apple Pay Button
                         Button(action: {
                             viewModel.processApplePayment(project: viewModel.selectedProject) { success, message in
