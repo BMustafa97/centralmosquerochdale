@@ -1,5 +1,25 @@
 import SwiftUI
 
+// MARK: - Mosque Selection
+enum Mosque: String, CaseIterable, Identifiable {
+    case ashfield = "Ashfield"
+    case centralMosque = "Central Mosque"
+    case merefield = "Merefield"
+    
+    var id: String { rawValue }
+    
+    var fileName: String {
+        switch self {
+        case .centralMosque:
+            return "PrayerTimes2025"
+        case .ashfield:
+            return "AshfieldPrayerTimes2025"
+        case .merefield:
+            return "MerefieldPrayerTimes2025"
+        }
+    }
+}
+
 // MARK: - Data Models
 struct Prayer: Identifiable, Codable {
     let id = UUID()
@@ -52,13 +72,20 @@ class PrayerTimesService: ObservableObject {
     @Published var currentDate: String = ""
     @Published var jummahTime: String = "13:00"
     @Published var selectedDate: Date = Date()
+    @Published var selectedMosque: Mosque = .centralMosque
+    @Published var mosqueName: String = "Central Mosque Rochdale"
     
     private var yearlyData: YearlyPrayerTimes?
     
-    func fetchPrayerTimes(for date: Date = Date()) {
+    func fetchPrayerTimes(for date: Date = Date(), mosque: Mosque? = nil) {
         isLoading = true
         errorMessage = nil
         selectedDate = date
+        
+        // Update selected mosque if provided
+        if let mosque = mosque {
+            selectedMosque = mosque
+        }
         
         // Get date in YYYY-MM-DD format
         let dateFormatter = DateFormatter()
@@ -70,8 +97,13 @@ class PrayerTimesService: ObservableObject {
         displayFormatter.dateFormat = "EEEE, d MMMM yyyy"
         currentDate = displayFormatter.string(from: date)
         
-        // Load JSON file
-        loadPrayerTimesFromJSON(for: dateString)
+        // Load JSON file for selected mosque
+        loadPrayerTimesFromJSON(for: dateString, mosque: selectedMosque)
+    }
+    
+    func changeMosque(to mosque: Mosque) {
+        selectedMosque = mosque
+        fetchPrayerTimes(for: selectedDate, mosque: mosque)
     }
     
     func goToNextDay() {
@@ -98,9 +130,9 @@ class PrayerTimesService: ObservableObject {
         return daysBack < 1
     }
     
-    private func loadPrayerTimesFromJSON(for dateString: String) {
-        guard let url = Bundle.main.url(forResource: "PrayerTimes2025", withExtension: "json") else {
-            self.errorMessage = "Prayer times file not found"
+    private func loadPrayerTimesFromJSON(for dateString: String, mosque: Mosque) {
+        guard let url = Bundle.main.url(forResource: mosque.fileName, withExtension: "json") else {
+            self.errorMessage = "Prayer times file not found for \(mosque.rawValue)"
             self.isLoading = false
             return
         }
@@ -109,6 +141,9 @@ class PrayerTimesService: ObservableObject {
             let data = try Data(contentsOf: url)
             let decoder = JSONDecoder()
             yearlyData = try decoder.decode(YearlyPrayerTimes.self, from: data)
+            
+            // Update mosque name from data
+            self.mosqueName = yearlyData?.mosque ?? mosque.rawValue
             
             // Find today's prayer times
             if let todaysPrayers = yearlyData?.prayerTimes.first(where: { $0.date == dateString }) {
@@ -150,6 +185,47 @@ class PrayerTimesService: ObservableObject {
         
         self.prayers = mockPrayers
         self.isLoading = false
+    }
+    
+    // MARK: - Prayer Highlighting Logic
+    func getCurrentOrNextPrayerIndex() -> Int? {
+        let calendar = Calendar.current
+        let now = Date()
+        
+        // Get current time components
+        let currentHour = calendar.component(.hour, from: now)
+        let currentMinute = calendar.component(.minute, from: now)
+        let currentTimeInMinutes = currentHour * 60 + currentMinute
+        
+        // Helper function to convert time string (HH:mm) to minutes since midnight
+        func timeToMinutes(_ timeString: String) -> Int? {
+            let components = timeString.split(separator: ":").compactMap { Int($0) }
+            guard components.count == 2 else { return nil }
+            return components[0] * 60 + components[1]
+        }
+        
+        // Find the next prayer (or current if we're within the prayer window)
+        for (index, prayer) in prayers.enumerated() {
+            guard let startTimeMinutes = timeToMinutes(prayer.startTime) else { continue }
+            
+            // For prayers with Jamaah time, check if we're between start and jamaah
+            if prayer.jamaaahTime != "-" {
+                guard let jamaahMinutes = timeToMinutes(prayer.jamaaahTime) else { continue }
+                
+                // If current time is between adhan and jamaah, highlight this prayer
+                if currentTimeInMinutes >= startTimeMinutes && currentTimeInMinutes < jamaahMinutes {
+                    return index
+                }
+            }
+            
+            // If current time is before this prayer's start time, this is the next prayer
+            if currentTimeInMinutes < startTimeMinutes {
+                return index
+            }
+        }
+        
+        // If we're past all prayers, highlight Isha (last prayer)
+        return prayers.count - 1
     }
 }
 
@@ -219,6 +295,22 @@ struct PrayerTimesView: View {
                 .background(themeManager.cardBackground)
                 .shadow(color: themeManager.primaryColor.opacity(0.1), radius: 2, x: 0, y: 2)
                 
+                // Mosque Selector
+                VStack(spacing: 8) {
+                    Picker("Mosque", selection: $service.selectedMosque) {
+                        ForEach(Mosque.allCases) { mosque in
+                            Text(mosque.rawValue).tag(mosque)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .onChange(of: service.selectedMosque) { newMosque in
+                        service.changeMosque(to: newMosque)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 12)
+                .background(themeManager.backgroundColor)
+                
                 if service.isLoading {
                     ProgressView("Loading prayer times...")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -239,13 +331,6 @@ struct PrayerTimesView: View {
                 } else {
                     ScrollView {
                         VStack(spacing: 20) {
-                            // Title
-                            Text("Prayer Times")
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .foregroundColor(themeManager.textPrimary)
-                                .padding(.top)
-                            
                             // Jummah Section
                             VStack(spacing: 12) {
                                 HStack {
@@ -275,14 +360,19 @@ struct PrayerTimesView: View {
                             .cornerRadius(12)
                             .padding(.horizontal)
                             
-                            PrayerTimesTable(prayers: service.prayers, jummahTime: service.jummahTime)
+                            PrayerTimesTable(
+                                prayers: service.prayers,
+                                jummahTime: service.jummahTime,
+                                highlightedIndex: service.getCurrentOrNextPrayerIndex()
+                            )
                                 .environmentObject(themeManager)
                             
                             // Footer Info
                             VStack(spacing: 8) {
-                                Text("🕌 Central Mosque Rochdale")
+                                Text("🕌 \(service.mosqueName)")
                                     .font(.footnote)
                                     .fontWeight(.medium)
+                                    .foregroundColor(themeManager.textPrimary)
                                     .foregroundColor(themeManager.primaryColor)
                                 
                                 Text("Prayer times are calculated for Rochdale, UK")
@@ -309,6 +399,7 @@ struct PrayerTimesView: View {
 struct PrayerTimesTable: View {
     let prayers: [Prayer]
     let jummahTime: String
+    let highlightedIndex: Int?
     @EnvironmentObject var themeManager: ThemeManager
     
     var body: some View {
@@ -340,7 +431,11 @@ struct PrayerTimesTable: View {
             
             // Prayer rows
             ForEach(Array(prayers.enumerated()), id: \.element.id) { index, prayer in
-                PrayerRowView(prayer: prayer, isEven: index % 2 == 0)
+                PrayerRowView(
+                    prayer: prayer,
+                    isEven: index % 2 == 0,
+                    isHighlighted: index == highlightedIndex
+                )
                     .environmentObject(themeManager)
                 if prayer.id != prayers.last?.id {
                     Divider()
@@ -358,6 +453,7 @@ struct PrayerTimesTable: View {
 struct PrayerRowView: View {
     let prayer: Prayer
     let isEven: Bool
+    let isHighlighted: Bool
     @EnvironmentObject var themeManager: ThemeManager
     
     var prayerIcon: String {
@@ -376,30 +472,35 @@ struct PrayerRowView: View {
         HStack {
             HStack(spacing: 12) {
                 Image(systemName: prayerIcon)
-                    .foregroundColor(themeManager.primaryColor)
+                    .foregroundColor(isHighlighted ? themeManager.cardBackground : themeManager.primaryColor)
                     .font(.title3)
                     .frame(width: 20)
                 
                 Text(prayer.name)
                     .font(.body)
-                    .fontWeight(.medium)
-                    .foregroundColor(themeManager.textPrimary)
+                    .fontWeight(isHighlighted ? .bold : .medium)
+                    .foregroundColor(isHighlighted ? themeManager.cardBackground : themeManager.textPrimary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
             Text(prayer.startTime)
                 .font(.body)
-                .foregroundColor(themeManager.textSecondary)
+                .fontWeight(isHighlighted ? .semibold : .regular)
+                .foregroundColor(isHighlighted ? themeManager.cardBackground : themeManager.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .center)
             
             Text(prayer.jamaaahTime)
                 .font(.body)
                 .fontWeight(.semibold)
-                .foregroundColor(themeManager.accentColor)
+                .foregroundColor(isHighlighted ? themeManager.cardBackground : themeManager.accentColor)
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .padding()
-        .background(isEven ? themeManager.cardBackground : themeManager.backgroundColor.opacity(0.3))
+        .background(
+            isHighlighted
+                ? themeManager.primaryColor
+                : (isEven ? themeManager.cardBackground : themeManager.backgroundColor.opacity(0.3))
+        )
     }
 }
 

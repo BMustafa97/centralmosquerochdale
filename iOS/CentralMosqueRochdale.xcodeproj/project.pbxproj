@@ -12,6 +12,8 @@
 		C001000000000000000001EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C001000000000000000001FF /* Assets.xcassets */; };
 		C001000000000000000002AA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C001000000000000000002BB /* Preview Assets.xcassets */; };
 		F3A0A2192EC55A660010F99D /* PrayerTimes2025.json in Resources */ = {isa = PBXBuildFile; fileRef = F3A0A2172EC55A660010F99D /* PrayerTimes2025.json */; };
+		F3A0A21A2ED00B500010F99D /* AshfieldPrayerTimes2025.json in Resources */ = {isa = PBXBuildFile; fileRef = F3A0A2182ED00B500010F99D /* AshfieldPrayerTimes2025.json */; };
+		F3A0A21B2ED00B510010F99D /* MerefieldPrayerTimes2025.json in Resources */ = {isa = PBXBuildFile; fileRef = F3A0A2192ED00B510010F99D /* MerefieldPrayerTimes2025.json */; };
 		F3A0A2222EC5F0550010F99D /* EventSubscriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A0A21B2EC5F0550010F99D /* EventSubscriptionView.swift */; };
 		F3A0A2232EC5F0550010F99D /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A0A21D2EC5F0550010F99D /* NotificationSettingsView.swift */; };
 		F3A0A2242EC5F0550010F99D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A0A2202EC5F0550010F99D /* SettingsView.swift */; };
@@ -33,6 +35,8 @@
 		C001000000000000000003AA /* CentralMosqueRochdale.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CentralMosqueRochdale.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C001000000000000000003CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F3A0A2172EC55A660010F99D /* PrayerTimes2025.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = PrayerTimes2025.json; sourceTree = "<group>"; };
+		F3A0A2182ED00B500010F99D /* AshfieldPrayerTimes2025.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = AshfieldPrayerTimes2025.json; sourceTree = "<group>"; };
+		F3A0A2192ED00B510010F99D /* MerefieldPrayerTimes2025.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MerefieldPrayerTimes2025.json; sourceTree = "<group>"; };
 		F3A0A21A2EC5F0550010F99D /* DonationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationView.swift; sourceTree = "<group>"; };
 		F3A0A21B2EC5F0550010F99D /* EventSubscriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventSubscriptionView.swift; sourceTree = "<group>"; };
 		F3A0A21C2EC5F0550010F99D /* MosqueEventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosqueEventsView.swift; sourceTree = "<group>"; };
@@ -105,6 +109,8 @@
 				F3E183D12EC60FB4002BFDB9 /* DonationProjects.json */,
 				F3E183CF2EC6079D002BFDB9 /* MosqueEvents2025.json */,
 				F3A0A2172EC55A660010F99D /* PrayerTimes2025.json */,
+				F3A0A2182ED00B500010F99D /* AshfieldPrayerTimes2025.json */,
+				F3A0A2192ED00B510010F99D /* MerefieldPrayerTimes2025.json */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -203,6 +209,8 @@
 				F3E183D02EC6079D002BFDB9 /* MosqueEvents2025.json in Resources */,
 				C001000000000000000001EE /* Assets.xcassets in Resources */,
 				F3A0A2192EC55A660010F99D /* PrayerTimes2025.json in Resources */,
+				F3A0A21A2ED00B500010F99D /* AshfieldPrayerTimes2025.json in Resources */,
+				F3A0A21B2ED00B510010F99D /* MerefieldPrayerTimes2025.json in Resources */,
 				F3E183D22EC60FB4002BFDB9 /* DonationProjects.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

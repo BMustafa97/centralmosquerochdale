@@ -1,0 +1,220 @@
+{
+  "year": 2025,
+  "mosque": "Ashfield Mosque",
+  "location": {
+    "latitude": 53.6097,
+    "longitude": -2.1561
+  },
+  "prayerTimes": [
+    {
+      "date": "2025-01-01",
+      "fajr": { "adhan": "06:05", "jamaah": "06:30" },
+      "sunrise": "08:26",
+      "dhuhr": { "adhan": "12:15", "jamaah": "13:10" },
+      "asr": { "adhan": "14:00", "jamaah": "14:25" },
+      "maghrib": { "adhan": "16:06", "jamaah": "16:21" },
+      "isha": { "adhan": "18:05", "jamaah": "18:30" },
+      "jummah": "12:55"
+    },
+    {
+      "date": "2025-11-12",
+      "fajr": { "adhan": "05:30", "jamaah": "05:55" },
+      "sunrise": "07:25",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "14:15", "jamaah": "14:40" },
+      "maghrib": { "adhan": "16:30", "jamaah": "16:45" },
+      "isha": { "adhan": "18:15", "jamaah": "18:40" },
+      "jummah": "12:55"
+    },
+    {
+      "date": "2025-11-13",
+      "fajr": { "adhan": "05:32", "jamaah": "05:57" },
+      "sunrise": "07:27",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "14:13", "jamaah": "14:38" },
+      "maghrib": { "adhan": "16:28", "jamaah": "16:43" },
+      "isha": { "adhan": "18:13", "jamaah": "18:38" },
+      "jummah": "12:55"
+    },
+    {
+      "date": "2025-11-14",
+      "fajr": { "adhan": "05:34", "jamaah": "05:59" },
+      "sunrise": "07:29",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "14:11", "jamaah": "14:36" },
+      "maghrib": { "adhan": "16:26", "jamaah": "16:41" },
+      "isha": { "adhan": "18:11", "jamaah": "18:36" },
+      "jummah": "12:55"
+    },
+    {
+      "date": "2025-11-15",
+      "fajr": { "adhan": "05:36", "jamaah": "06:01" },
+      "sunrise": "07:31",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "14:09", "jamaah": "14:34" },
+      "maghrib": { "adhan": "16:24", "jamaah": "16:39" },
+      "isha": { "adhan": "18:09", "jamaah": "18:34" },
+      "jummah": "12:55"
+    },
+    {
+      "date": "2025-11-16",
+      "fajr": { "adhan": "05:38", "jamaah": "06:03" },
+      "sunrise": "07:33",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "14:07", "jamaah": "14:32" },
+      "maghrib": { "adhan": "16:22", "jamaah": "16:37" },
+      "isha": { "adhan": "18:07", "jamaah": "18:32" },
+      "jummah": "12:55"
+    },
+    {
+      "date": "2025-11-17",
+      "fajr": { "adhan": "05:40", "jamaah": "06:05" },
+      "sunrise": "07:35",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "14:05", "jamaah": "14:30" },
+      "maghrib": { "adhan": "16:20", "jamaah": "16:35" },
+      "isha": { "adhan": "18:05", "jamaah": "18:30" },
+      "jummah": "12:55"
+    },
+    {
+      "date": "2025-11-18",
+      "fajr": { "adhan": "05:42", "jamaah": "06:07" },
+      "sunrise": "07:37",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "14:03", "jamaah": "14:28" },
+      "maghrib": { "adhan": "16:18", "jamaah": "16:33" },
+      "isha": { "adhan": "18:03", "jamaah": "18:28" },
+      "jummah": "12:55"
+    },
+    {
+      "date": "2025-11-19",
+      "fajr": { "adhan": "05:44", "jamaah": "06:09" },
+      "sunrise": "07:39",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "14:01", "jamaah": "14:26" },
+      "maghrib": { "adhan": "16:16", "jamaah": "16:31" },
+      "isha": { "adhan": "18:01", "jamaah": "18:26" },
+      "jummah": "12:55"
+    },
+    {
+      "date": "2025-11-20",
+      "fajr": { "adhan": "05:46", "jamaah": "06:11" },
+      "sunrise": "07:41",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "13:59", "jamaah": "14:24" },
+      "maghrib": { "adhan": "16:14", "jamaah": "16:29" },
+      "isha": { "adhan": "17:59", "jamaah": "18:24" },
+      "jummah": "12:55"
+    },
+    {
+      "date": "2025-11-21",
+      "fajr": { "adhan": "05:48", "jamaah": "06:13" },
+      "sunrise": "07:43",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "13:57", "jamaah": "14:22" },
+      "maghrib": { "adhan": "16:12", "jamaah": "16:27" },
+      "isha": { "adhan": "17:57", "jamaah": "18:22" },
+      "jummah": "13:10"
+    },
+    {
+      "date": "2025-11-22",
+      "fajr": { "adhan": "05:50", "jamaah": "06:15" },
+      "sunrise": "07:45",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "13:55", "jamaah": "14:20" },
+      "maghrib": { "adhan": "16:10", "jamaah": "16:25" },
+      "isha": { "adhan": "17:55", "jamaah": "18:20" },
+      "jummah": "13:10"
+    },
+    {
+      "date": "2025-11-23",
+      "fajr": { "adhan": "05:52", "jamaah": "06:17" },
+      "sunrise": "07:47",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "13:53", "jamaah": "14:18" },
+      "maghrib": { "adhan": "16:08", "jamaah": "16:23" },
+      "isha": { "adhan": "17:53", "jamaah": "18:18" },
+      "jummah": "13:10"
+    },
+    {
+      "date": "2025-11-24",
+      "fajr": { "adhan": "05:54", "jamaah": "06:19" },
+      "sunrise": "07:49",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "13:51", "jamaah": "14:16" },
+      "maghrib": { "adhan": "16:06", "jamaah": "16:21" },
+      "isha": { "adhan": "17:51", "jamaah": "18:16" },
+      "jummah": "13:10"
+    },
+    {
+      "date": "2025-11-25",
+      "fajr": { "adhan": "05:56", "jamaah": "06:21" },
+      "sunrise": "07:51",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "13:49", "jamaah": "14:14" },
+      "maghrib": { "adhan": "16:04", "jamaah": "16:19" },
+      "isha": { "adhan": "17:49", "jamaah": "18:14" },
+      "jummah": "13:10"
+    },
+    {
+      "date": "2025-11-26",
+      "fajr": { "adhan": "05:58", "jamaah": "06:23" },
+      "sunrise": "07:53",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "13:47", "jamaah": "14:12" },
+      "maghrib": { "adhan": "16:02", "jamaah": "16:17" },
+      "isha": { "adhan": "17:47", "jamaah": "18:12" },
+      "jummah": "13:10"
+    },
+    {
+      "date": "2025-11-27",
+      "fajr": { "adhan": "06:00", "jamaah": "06:25" },
+      "sunrise": "07:55",
+      "dhuhr": { "adhan": "12:05", "jamaah": "12:55" },
+      "asr": { "adhan": "13:45", "jamaah": "14:10" },
+      "maghrib": { "adhan": "16:00", "jamaah": "16:15" },
+      "isha": { "adhan": "17:45", "jamaah": "18:10" },
+      "jummah": "13:10"
+    },
+    {
+      "date": "2025-11-28",
+      "fajr": { "adhan": "06:02", "jamaah": "06:27" },
+      "sunrise": "07:57",
+      "dhuhr": { "adhan": "12:06", "jamaah": "12:56" },
+      "asr": { "adhan": "13:43", "jamaah": "14:08" },
+      "maghrib": { "adhan": "15:58", "jamaah": "16:13" },
+      "isha": { "adhan": "17:43", "jamaah": "18:08" },
+      "jummah": "13:10"
+    },
+    {
+      "date": "2025-11-29",
+      "fajr": { "adhan": "06:04", "jamaah": "06:29" },
+      "sunrise": "07:59",
+      "dhuhr": { "adhan": "12:06", "jamaah": "12:56" },
+      "asr": { "adhan": "13:41", "jamaah": "14:06" },
+      "maghrib": { "adhan": "15:56", "jamaah": "16:11" },
+      "isha": { "adhan": "17:41", "jamaah": "18:06" },
+      "jummah": "13:10"
+    },
+    {
+      "date": "2025-11-30",
+      "fajr": { "adhan": "06:06", "jamaah": "06:31" },
+      "sunrise": "08:01",
+      "dhuhr": { "adhan": "12:06", "jamaah": "12:56" },
+      "asr": { "adhan": "13:39", "jamaah": "14:04" },
+      "maghrib": { "adhan": "15:54", "jamaah": "16:09" },
+      "isha": { "adhan": "17:39", "jamaah": "18:04" },
+      "jummah": "13:10"
+    },
+    {
+      "date": "2025-12-25",
+      "fajr": { "adhan": "06:10", "jamaah": "06:35" },
+      "sunrise": "08:30",
+      "dhuhr": { "adhan": "12:10", "jamaah": "13:00" },
+      "asr": { "adhan": "13:50", "jamaah": "14:15" },
+      "maghrib": { "adhan": "15:55", "jamaah": "16:10" },
+      "isha": { "adhan": "17:50", "jamaah": "18:15" },
+      "jummah": "13:10"
+    }
+  ]
+}
