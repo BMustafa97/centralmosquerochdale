@@ -455,6 +455,7 @@ struct PrayerRowView: View {
     let isEven: Bool
     let isHighlighted: Bool
     @EnvironmentObject var themeManager: ThemeManager
+    @State private var shimmerOffset: CGFloat = -200
     
     var prayerIcon: String {
         switch prayer.name {
@@ -472,35 +473,85 @@ struct PrayerRowView: View {
         HStack {
             HStack(spacing: 12) {
                 Image(systemName: prayerIcon)
-                    .foregroundColor(isHighlighted ? themeManager.cardBackground : themeManager.primaryColor)
+                    .foregroundColor(isHighlighted ? themeManager.accentColor : themeManager.primaryColor)
                     .font(.title3)
                     .frame(width: 20)
                 
                 Text(prayer.name)
                     .font(.body)
                     .fontWeight(isHighlighted ? .bold : .medium)
-                    .foregroundColor(isHighlighted ? themeManager.cardBackground : themeManager.textPrimary)
+                    .foregroundColor(isHighlighted ? themeManager.primaryColor : themeManager.textPrimary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
             Text(prayer.startTime)
                 .font(.body)
                 .fontWeight(isHighlighted ? .semibold : .regular)
-                .foregroundColor(isHighlighted ? themeManager.cardBackground : themeManager.textSecondary)
+                .foregroundColor(isHighlighted ? themeManager.primaryColor : themeManager.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .center)
             
             Text(prayer.jamaaahTime)
                 .font(.body)
                 .fontWeight(.semibold)
-                .foregroundColor(isHighlighted ? themeManager.cardBackground : themeManager.accentColor)
+                .foregroundColor(isHighlighted ? themeManager.primaryColor : themeManager.accentColor)
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .padding()
         .background(
-            isHighlighted
-                ? themeManager.primaryColor
-                : (isEven ? themeManager.cardBackground : themeManager.backgroundColor.opacity(0.3))
+            Group {
+                if isHighlighted {
+                    ZStack {
+                        // Base glass background
+                        themeManager.primaryColor.opacity(0.08)
+                        
+                        // Shimmer effect
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color.white.opacity(0.0),
+                                Color.white.opacity(0.3),
+                                Color.white.opacity(0.0)
+                            ]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                        .frame(width: 100)
+                        .offset(x: shimmerOffset)
+                        .blur(radius: 20)
+                    }
+                } else {
+                    (isEven ? themeManager.cardBackground : themeManager.backgroundColor.opacity(0.3))
+                }
+            }
         )
+        .overlay(
+            Group {
+                if isHighlighted {
+                    RoundedRectangle(cornerRadius: 0)
+                        .strokeBorder(
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    themeManager.accentColor.opacity(0.3),
+                                    themeManager.accentColor.opacity(0.6),
+                                    themeManager.accentColor.opacity(0.3)
+                                ]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            ),
+                            lineWidth: 1.5
+                        )
+                }
+            }
+        )
+        .onAppear {
+            if isHighlighted {
+                withAnimation(
+                    Animation.linear(duration: 3.0)
+                        .repeatForever(autoreverses: false)
+                ) {
+                    shimmerOffset = 400
+                }
+            }
+        }
     }
 }
 
